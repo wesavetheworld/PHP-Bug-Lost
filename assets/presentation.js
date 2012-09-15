@@ -93,7 +93,7 @@ function bl_listen(event, elem, func, id) {
 	if (elem) {
 		if (elem.addEventListener) {
 			elem.addEventListener(event, func, false);
-		} else if (elem.attachEvent) { // IE DOM
+		} else if (elem.attachEvent) {
 			var r = elem.attachEvent("on" + event, func);
 			return r;
 		} else {
@@ -191,7 +191,7 @@ function bl_show_errors() {
 }
 
 function bl_alert_errors() {
-	var bl_interval = setInterval('bl_show_errors()', 500);
+	var bl_interval = setInterval(bl_show_errors(), 500);
 	setTimeout("clearInterval(" + bl_interval + ")", 3000);
 }
 ////////////////////////////////////
@@ -793,7 +793,7 @@ function bl_setCookie(c_name, value, exdays) {
 function bl_params_to_html(params, id) {
 
 	if (params) {
-	
+
 		var param,
 			i,
 			p,
@@ -982,8 +982,8 @@ s_ajaxListener.callback = function () {
 	cXMLHttpRequest.onabort = null;
 	// Public Methods
 	cXMLHttpRequest.prototype.open = function (sMethod, sUrl, bAsync, sUser, sPassword) {
-	
-	
+
+
 		/* code for PHP BUG LOST */
 		var d1 = new Date(), // time mark
 			el_id = randomString(12), // random id for handle toggle event
@@ -1013,11 +1013,11 @@ s_ajaxListener.callback = function () {
 		if (bl_url_ex[1] !== 'undefined') {
 			data.params = bl_url_ex[1];
 		}
-		
+
 		bl_msg_ajax(data, el_id);
 		/* end PHP BUG LOST */
-		
-		
+
+
 		// Delete headers, required when object is reused
 		delete this._headers;
 		// When bAsync parameter value is omitted, use true as default
@@ -1055,7 +1055,7 @@ s_ajaxListener.callback = function () {
 		fReadyStateChange(this);
 
 		this._object.onreadystatechange = function (dd) {
-			
+
 
 			var d2 = new Date(),
 				d3 = d2 - d1, // tiempo de la query en milisengundos

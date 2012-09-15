@@ -1,20 +1,20 @@
 <?php
 /**
- * PHP Bug lost 0.5
+ * PHP Bug lost 0.5a Standard
  * One-file script for debug and monitor scripts.
  * See docs and support forum at http://www.phpbuglost.com
  *
  * PHP Version 5
  *
- * @version 0.5
- * @author Jordi Enguídanos <jordifreek@gmail.com>
- * @licence MIT Licence
+ * @version 0.5a
+ * @author  Jordi Enguídanos <jordifreek@gmail.com>
+ * @license MIT Licence
+ * @link    http://phpbuglost.com
  */
 
 
 error_reporting(E_ALL); // show errors...
 set_error_handler("bl_error_handler"); // ... and hidden with error_handler
-
 
 #################################
 ## - SECURITY OPTIONS
@@ -165,7 +165,7 @@ define('_bl_show_internal_classes', true);
  * What type of DB uses. One of mysql|sqlite|pdo
  * @type string
  */
-define('_bl_db', 'mysql');
+define('_bl_db_driver', 'mysql');
 
 /** use explain for show more info on mysql querys */
 define('_bl_explain_sql', false);
@@ -220,7 +220,7 @@ define('_bl_file_viewer', true);
  * Keep empty for use internal css
  * @type string
  */
-define('_bl_css_file', '');
+define('_bl_css_file', '/PHP-Bug-Lost/assets/presentation.css');
 
 /**
  * Use external js file. Multiple with coma.
@@ -319,6 +319,7 @@ function bl_create_bookmarklets()
 // End Configure
 ///////////////////////
 
+define('_BL_VERSION', 'standard');
 
 // private. name of this file script. May be you don't need to touch this
 define('_bl_filename', basename(__file__));
@@ -336,16 +337,6 @@ define('_bl_path', str_replace(
     )
 );
 define('_bl_root', $_SERVER['DOCUMENT_ROOT']);
-
-
-// check secret key
-if (_bl_delete_vars == true and _bl_secret_key == '_pbl_') {
-    die('<strong>ERROR FROM PHP BUG LOST:</strong> Sorry for this error!
-        but you need to change your secret key
-        otherwise it is not secret! Open you PHP Bug Lost file,
-        search for _bl_secret_key constant and change with any word, number or
-        alphanumeric string.');
-}
 
 
 /**
@@ -528,10 +519,10 @@ function bl_link_file($file, $line)
 function bl_send_mail($msg, $title, $data)
 {
 
-    $headers = 'MIME-Version: 1.0' . "\r\n";
-    $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-    $headers .= 'To: <' . _bl_admin_mail . '>' . "\r\n";
-    //$headers .= 'From: Put any thing here <and_any@email.com>' . "\r\n";
+    $headers = 'MIME-Version: 1.0'."\r\n";
+    $headers .= 'Content-type: text/html; charset=iso-8859-1'."\r\n";
+    $headers .= 'To: <'._bl_admin_mail.'>'."\r\n";
+    //$headers .= 'From: Put any thing here <and_any@email.com>'."\r\n";
 
     $th_style = 'font-weight:bold; background-color:#eee; border-bottom:1px dashed #ccc; padding:5px;';
 
@@ -539,8 +530,8 @@ function bl_send_mail($msg, $title, $data)
     $data_td = '';
     foreach ($data as $k => $v) {
         $data_th .= '<th style="'.$th_style.'">' .
-            ucfirst($k) . '</th>';
-        $data_td .= '<td style="padding:5px;">' . $v . '</td>';
+            ucfirst($k).'</th>';
+        $data_td .= '<td style="padding:5px;">'.$v.'</td>';
     }
 
     $error_logs = '<p>No log messages</p>';
@@ -665,14 +656,14 @@ function bl_get_msg($type = _bl_messages_types, $styles = false)
             }
 
             $result .= '
-                <tr id="bl_msg_num_' . $c . '" class="bl_normal_tr bl_debug_msg_' .
+                <tr id="bl_msg_num_'.$c.'" class="bl_normal_tr bl_debug_msg_' .
                 $v['type'] .
                 ' bl_msg_activo" onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
-                    <td style="'.$td_colors[$v['type']].'" class="bl_msg_' . $v['type'] . '"></td>
-                    <td class="bl_td">' . $v['msg'] . '</td>
-                    <td class="bl_td">' . bl_link_file($v['file'], $v['line']) . '</td>
-                    <td class="bl_td">' . $v['line'] . '</td>
-                    <td class="bl_td">' . $v['time'] . '</td>
+                    <td style="'.$td_colors[$v['type']].'" class="bl_msg_'.$v['type'].'"></td>
+                    <td class="bl_td">'.$v['msg'].'</td>
+                    <td class="bl_td">'.bl_link_file($v['file'], $v['line']).'</td>
+                    <td class="bl_td">'.$v['line'].'</td>
+                    <td class="bl_td">'.$v['time'].'</td>
                 </tr>';
             $c++;
             _bl::$count_msg = $c;
@@ -750,7 +741,7 @@ function bl_var(&$var, $var_name = null)
     if ($var_name == null) {
         $vals = $GLOBALS;
         $old = $var;
-        $var = $new = 'UNIQUE' . rand() . 'VARIABLE';
+        $var = $new = 'UNIQUE'.rand().'VARIABLE';
         $vname = false;
 
         foreach ($vals as $key => $val) {
@@ -769,9 +760,9 @@ function bl_var(&$var, $var_name = null)
     // the same state of the object.
     // Here we register the object with different states
     if (is_object($var)) {
-        _bl::$vars['object_' . $vname . '|' . $c] = get_object_vars($var);
+        _bl::$vars['object_'.$vname.'|'.$c] = get_object_vars($var);
     } else {
-        _bl::$vars[$vname . '|' . $c] = $var;
+        _bl::$vars[$vname.'|'.$c] = $var;
     }
 }
 
@@ -793,7 +784,7 @@ function bl_time($label = null, $start = null)
 
     $c = count(_bl::$msgs_time);
     if ($label == null) {
-       $label = 'Time mark ' . $c;
+       $label = 'Time mark '.$c;
     }
     _bl::$msgs_time[$c]['label'] = strip_tags($label);
     _bl::$msgs_time[$c]['time'] = bl_format_time(bl_get_time($start));
@@ -881,10 +872,10 @@ function bl_error_handler($errno, $errstr, $errfile, $errline, $errcontext)
  */
 function bl_query($query, $con = null)
 {
-    if (_bl_db == 'mysql') {
+    if (_bl_db_driver == 'mysql') {
         return bl_mysql($query, $con, 1);
 
-    } elseif (_bl_db == 'sqlite') {
+    } elseif (_bl_db_driver == 'sqlite') {
         if ($con != null) {
             return bl_sqlite($query, $con, 1);
         } else {
@@ -896,7 +887,7 @@ function bl_query($query, $con = null)
             );
         }
 
-    } elseif (_bl_db == 'pdo') {
+    } elseif (_bl_db_driver == 'pdo') {
         if ($con != null) {
             return bl_pdo($query, $con, 1);
         } else {
@@ -906,7 +897,7 @@ function bl_query($query, $con = null)
 
     } else {
         throw new Exception('PHPBugLost: Error when executing bl_query, check
-            _bl_db and set one of bl_mysql, bl_sqlite or bl_pdo');
+            _bl_db_driver and set one of bl_mysql, bl_sqlite or bl_pdo');
     }
 }
 
@@ -962,24 +953,24 @@ function bl_mysql($query, $con = null, $debugnum = 0)
             // explain query?
             $explain_info = '';
             if (_bl_explain_sql and !$error and _bl_production == false) {
-                $sql_explain = mysql_query("EXPLAIN " . $query);
+                $sql_explain = mysql_query("EXPLAIN ".$query);
                 $explain = mysql_fetch_assoc($sql_explain);
 
                 $explain_info = '
                 <p class="bl_explain">
-                    <strong>EXPLAIN</strong> -&gt;Table: <em>' . $explain['table'] .
+                    <strong>EXPLAIN</strong> -&gt;Table: <em>'.$explain['table'] .
                     '</em> <span class="bl_msg_separator">|</span>
-                    Type: <em>' . $explain['type'] .
+                    Type: <em>'.$explain['type'] .
                     '</em> <span class="bl_msg_separator">|</span>
-                    Possible Keys: <em>' . $explain['possible_keys'] .
+                    Possible Keys: <em>'.$explain['possible_keys'] .
                     '</em> <span class="bl_msg_separator">|</span>
-                    Key: <em>' . $explain['key'] .
+                    Key: <em>'.$explain['key'] .
                     '</em> <span class="bl_msg_separator">|</span>
-                    Key len: <em>' . $explain['key_len'] .
+                    Key len: <em>'.$explain['key_len'] .
                     '</em> <span class="bl_msg_separator">|</span>
-                    Ref: <em>' . $explain['ref'] .
+                    Ref: <em>'.$explain['ref'] .
                     '</em> <span class="bl_msg_separator">|</span>
-                    Extra: <em>' . $explain['Extra'] . '</em>
+                    Extra: <em>'.$explain['Extra'].'</em>
                 </p>';
 
                 $results = $explain['rows'];
@@ -998,7 +989,7 @@ function bl_mysql($query, $con = null, $debugnum = 0)
     _bl::$msg_sql[$c]['insert'] = $insert_id;
     _bl::$msg_sql[$c]['result'] = $results;
     _bl::$msg_sql[$c]['explain'] = $explain_info;
-    _bl::$msg_sql[$c]['error'] = (!empty($error)) ? '<span class="error">' . $error .'</span>' : '';
+    _bl::$msg_sql[$c]['error'] = (!empty($error)) ? '<span class="error">'.$error .'</span>' : '';
     _bl::$msg_sql[$c]['file'] = $debug[$debugnum]['file'];
     _bl::$msg_sql[$c]['line'] = $debug[$debugnum]['line'];
 
@@ -1065,7 +1056,7 @@ function bl_sqlite($query, $con, $debugnum = 0)
     _bl::$msg_sql[$c]['insert'] = $insert_id;
     _bl::$msg_sql[$c]['result'] = '-';
     _bl::$msg_sql[$c]['explain'] = '';
-    _bl::$msg_sql[$c]['error'] = (!empty($error)) ? '<span class="error">' . $error .'</span>' : '-';
+    _bl::$msg_sql[$c]['error'] = (!empty($error)) ? '<span class="error">'.$error .'</span>' : '-';
     _bl::$msg_sql[$c]['file'] = $debug[$debugnum]['file'];
     _bl::$msg_sql[$c]['line'] = $debug[$debugnum]['line'];
 
@@ -1128,7 +1119,7 @@ function bl_pdo($query, $con, $debugnum = 0)
     _bl::$msg_sql[$c]['insert'] = $insert_id;
     _bl::$msg_sql[$c]['result'] = $num_result;
     _bl::$msg_sql[$c]['explain'] = '';
-    _bl::$msg_sql[$c]['error'] = (!empty($error)) ? '<span class="error">' . $error .'</span>' : '';
+    _bl::$msg_sql[$c]['error'] = (!empty($error)) ? '<span class="error">'.$error .'</span>' : '';
     _bl::$msg_sql[$c]['file'] = $debug[0]['file'];
     _bl::$msg_sql[$c]['line'] = $debug[0]['line'];
 
@@ -1155,7 +1146,7 @@ function bl_convert($size)
             'tb',
             'pb');
         return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) .
-            ' <span>' . $unit[$i] . '</span>';
+            ' <span>'.$unit[$i].'</span>';
     }
     return '0';
 }
@@ -1381,9 +1372,9 @@ function bl_high_sql($sql)
         if (in_array($key, array('constants', 'chars'))) {
             $regexp = $words[$key];
         } else {
-            $regexp = '/\\b(' . join("|", $words[$key]) . ')\\b/i';
+            $regexp = '/\\b('.join("|", $words[$key]).')\\b/i';
         }
-        $sql = preg_replace($regexp, '<span style="color:' . $color . "\">$1</span>",
+        $sql = preg_replace($regexp, '<span style="color:'.$color."\">$1</span>",
             $sql);
     }
 
@@ -1455,14 +1446,14 @@ function bl_get_querys($bl_msg_sql)
             $explain = ($v['explain']) ? $v['explain'] : '';
             $result .= '
                 <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
-                    <td>' . bl_high_sql($v['query']) . $explain . '</td>
+                    <td>'.bl_high_sql($v['query']).$explain.'</td>
                     <td>'.$type.'</td>
-                    <td>' . bl_format_time($v['time']) . '</td>
-                    <td>' . $v['insert'] . '</td>
-                    <td>' . $v['result'] . '</td>
-                    <td>' . $v['error'] . '</td>
-                    <td>' . bl_link_file($v['file'], $v['line']) . '</td>
-                    <td>' . $v['line'] . '</td>
+                    <td>'.bl_format_time($v['time']).'</td>
+                    <td>'.$v['insert'].'</td>
+                    <td>'.$v['result'].'</td>
+                    <td>'.$v['error'].'</td>
+                    <td>'.bl_link_file($v['file'], $v['line']).'</td>
+                    <td>'.$v['line'].'</td>
                 </tr>';
         }
 
@@ -1512,13 +1503,13 @@ function bl_get_vars($array, $array_name, $id_prefix = '', $caption = '')
                     <th>Value</th>
                     <th>Type</th>
                     <th>Size</th>
-                    ' . $extra_cols . '
+                    '.$extra_cols.'
                 </tr>
             </thead>';
         }
 
         $result = '
-        <table id="bl_table' . strtolower($array_name) . '">
+        <table id="bl_table'.strtolower($array_name).'">
             '.$caption.'
             '.$thead.'
             <tbody>';
@@ -1578,38 +1569,38 @@ function bl_get_vars($array, $array_name, $id_prefix = '', $caption = '')
                     $var_type_name = ($var_type == 'Array') ? 'Array' : 'Object';
 
                     $valor = '
-                    <a href="javascript:void(0);" onclick="view_array(\''.$id_prefix.'div_' . $array_name .
-                        '_' . $count . '\')" id="'.$id_prefix.'a_' . $array_name . '_' . $count .
-                        '" style="color:#008000">' . $var_type_name . '(...</a>
-                    <div style="display:none;" id="'.$id_prefix.'div_' . $array_name . '_' . $count . '">
+                    <a href="javascript:void(0);" onclick="view_array(\''.$id_prefix.'div_'.$array_name .
+                        '_'.$count.'\')" id="'.$id_prefix.'a_'.$array_name.'_'.$count .
+                        '" style="color:#008000">'.$var_type_name.'(...</a>
+                    <div style="display:none;" id="'.$id_prefix.'div_'.$array_name.'_'.$count.'">
                         <p class="bl_close_array"><a href="javascript:void(0);" onclick="view_array(\''.$id_prefix.'div_' .
-                        $array_name . '_' . $count . '\')">Close</a></p>
-                        <pre>' . bl_high_array($v) . '</pre>
+                        $array_name.'_'.$count.'\')">Close</a></p>
+                        <pre>'.bl_high_array($v).'</pre>
                     </div>';
 
                 } elseif ($var_type == 'Object') {
 
                     // methods
                     $valor = '
-                    <a href="javascript:void(0);" onclick="view_array(\''.$id_prefix.'div_' . $array_name .
-                        '_' . $count . '1\')" id="'.$id_prefix.'a_' . $array_name . '_' . $count .
+                    <a href="javascript:void(0);" onclick="view_array(\''.$id_prefix.'div_'.$array_name .
+                        '_'.$count.'1\')" id="'.$id_prefix.'a_'.$array_name.'_'.$count .
                         '1" style="color:#008000">Methods</a>
-                    <div style="display:none; margin-bottom:10px;" id="'.$id_prefix.'div_' . $array_name .
-                        '_' . $count . '1">
+                    <div style="display:none; margin-bottom:10px;" id="'.$id_prefix.'div_'.$array_name .
+                        '_'.$count.'1">
                         <p class="bl_close_array"><a href="javascript:void(0);" onclick="view_array(\''.$id_prefix.'div_' .
-                        $array_name . '_' . $count . '1\')">Close Methods</a></p>
-                        <pre>' . bl_high_array(get_class_methods($v)) . '</pre>
+                        $array_name.'_'.$count.'1\')">Close Methods</a></p>
+                        <pre>'.bl_high_array(get_class_methods($v)).'</pre>
                     </div>';
 
                     $valor .= '
-                    <a href="javascript:void(0);" onclick="view_array(\''.$id_prefix.'div_' . $array_name .
-                        '_' . $count . '3\')" id="'.$id_prefix.'a_' . $array_name . '_' . $count .
+                    <a href="javascript:void(0);" onclick="view_array(\''.$id_prefix.'div_'.$array_name .
+                        '_'.$count.'3\')" id="'.$id_prefix.'a_'.$array_name.'_'.$count .
                         '3" style="color:#008000">Object(...</a>
-                    <div style="display:none; margin-bottom:10px;" id="'.$id_prefix.'div_' . $array_name .
-                        '_' . $count . '3">
+                    <div style="display:none; margin-bottom:10px;" id="'.$id_prefix.'div_'.$array_name .
+                        '_'.$count.'3">
                         <p class="bl_close_array"><a href="javascript:void(0);" onclick="view_array(\''.$id_prefix.'div_' .
-                        $array_name . '_' . $count . '3\')">Close Object</a></p>
-                        <pre>' . bl_high_array($v) . '</pre>
+                        $array_name.'_'.$count.'3\')">Close Object</a></p>
+                        <pre>'.bl_high_array($v).'</pre>
                     </div>';
 
                 } elseif ($var_type == 'Bool') {
@@ -1620,10 +1611,10 @@ function bl_get_vars($array, $array_name, $id_prefix = '', $caption = '')
                     }
 
                 } elseif ($var_type == 'Int' or is_numeric($v)) {
-                    $valor = '<span style="color:#f33">' . $v . '</span>';
+                    $valor = '<span style="color:#f33">'.$v.'</span>';
 
                 } elseif ($var_type == 'Float') {
-                    $valor = '<span style="color:#f33">' . $v . '</span>';
+                    $valor = '<span style="color:#f33">'.$v.'</span>';
 
                 } elseif ($var_type == 'Resource') {
                     $valor = '['.get_resource_type($v).']';
@@ -1638,14 +1629,13 @@ function bl_get_vars($array, $array_name, $id_prefix = '', $caption = '')
                         if (_bl_html_viewer == true) {
                             $valor_html = $v;
                             if ($valor_html != strip_tags($valor_html)) {
-                                $html_button = '<a href="javascript:bl_view_html(' . _bl::$count_vars .
-                                    ')">[html]</a>';
+                                $html_button = '<a href="javascript:bl_view_html('._bl::$count_vars.')">[html]</a>';
                                 $valor_html = '
-                                <div id="bl_view_html_' . _bl::$count_vars .
+                                <div id="bl_view_html_'._bl::$count_vars .
                                     '" style="display:none;" class="bl_view_html">
                                     <div class="bl_view_html_title">HTML Viewer</div>
                                     <div class="bl_view_html_content">
-                                    ' . $valor_html . '
+                                    '.$valor_html.'
                                     </div>
                                 </div>';
 
@@ -1657,16 +1647,16 @@ function bl_get_vars($array, $array_name, $id_prefix = '', $caption = '')
                         }
 
                         if (strlen($valor) > 200) {
-                            $valor = '<div id="bl_view_' . _bl::$count_vars . '">' . substr($valor, 0,
-                                200) . ' [...]</div>
-                            <div id="bl_view_more_' . _bl::$count_vars . '" style="display:none;">
-                                ' . $valor . '
-                                <p><a href="javascript:bl_toggle(\'bl_view_more_' . _bl::$count_vars .
-                                '\');bl_toggle(\'bl_view_' . _bl::$count_vars . '\');">Close</a></p>
+                            $valor = '<div id="bl_view_'._bl::$count_vars.'">'.substr($valor, 0,
+                                200).' [...]</div>
+                            <div id="bl_view_more_'._bl::$count_vars.'" style="display:none;">
+                                '.$valor.'
+                                <p><a href="javascript:bl_toggle(\'bl_view_more_'._bl::$count_vars .
+                                '\');bl_toggle(\'bl_view_'._bl::$count_vars.'\');">Close</a></p>
                             </div>
-                            ' . $valor_html;
-                            $toggle = '<br /><a href="javascript:bl_toggle(\'bl_view_more_' . _bl::$count_vars .
-                                '\');bl_toggle(\'bl_view_' . _bl::$count_vars . '\');">[...]</a>';
+                            '.$valor_html;
+                            $toggle = '<br /><a href="javascript:bl_toggle(\'bl_view_more_'._bl::$count_vars .
+                                '\');bl_toggle(\'bl_view_'._bl::$count_vars.'\');">[...]</a>';
                         }
 
                     }
@@ -1694,28 +1684,28 @@ function bl_get_vars($array, $array_name, $id_prefix = '', $caption = '')
                     $prefix = '';
                 $results++;
 
-                $tr_id = 'bl_var' . $array_name . '_' . $count . '';
+                $tr_id = 'bl_var'.$array_name.'_'.$count.'';
 
                 $extra_cols = '';
-                if ((_bl_delete_vars == true) and
-                    ($array_name == '_SESSION' or $array_name == '_COOKIE')) {
+                if ((_bl_delete_vars == true)
+                    and ($array_name == '_SESSION' or $array_name == '_COOKIE')
+                ) {
                     // bl_del_var(var_name, url, type, key)
                     $extra_cols = '
                         <td>
-                            <a href="javascript:bl_del_var(\'' . $k . '\', \'' .
-                        _bl_path . '\', \'' . $array_name . '\', \'' . _bl_secret_key . '\', \'' .
-                        $tr_id . '\', \''._bl_var_del.'\');">delete</a>
+                            <a href="javascript:bl_del_var(\''.$k.'\', \'' .
+                        _bl_path.'\', \''.$array_name.'\', \''._bl_secret_key.'\', \'' .
+                        $tr_id.'\', \''._bl_var_del.'\');">delete</a>
                         </td>';
                 }
 
                 $result .= '
-                    <tr id="' . $tr_id .
-                    '" onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
-                        <td class="bl_col_title">$' . $k . $toggle . $html_button . '</td>
-                        <td>' . $valor . '</td>
-                        <td>' . $var_type . '</td>
-                        <td class="bl_right">' . bl_convert($var_size) . '</td>
-                        ' . $extra_cols . '
+                    <tr id="'.$tr_id.'" onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
+                        <td class="bl_col_title">$'.$k.$toggle.$html_button.'</td>
+                        <td class="bl_var_value"><pre>'.$valor.'</pre></td>
+                        <td class="bl_var_type">'.$var_type.'</td>
+                        <td class="bl_right bl_var_syze">'.bl_convert($var_size).'</td>
+                        '.$extra_cols.'
                     </tr>';
 
                 if ($var_size > _bl::$max_var_size['size']) {
@@ -1733,7 +1723,7 @@ function bl_get_vars($array, $array_name, $id_prefix = '', $caption = '')
     }
 
     if ($results == 0) {
-        $result = '<div class="bl_nothing"><p>Array ' . $array_name . ' is empty</p></div>';
+        $result = '<div class="bl_nothing"><p>Array '.$array_name.' is empty</p></div>';
     }
 
     return $result;
@@ -1755,7 +1745,7 @@ function bl_get_comments($reflection)
         $result = 'No phpDocs';
     } else {
         $comments = htmlspecialchars($comments);
-        $result = '<span class="bl_orange">' . str_replace("\n", '<br />', $comments) .
+        $result = '<span class="bl_orange">'.str_replace("\n", '<br />', $comments) .
             '</span>';
     }
     return $result;
@@ -1774,7 +1764,7 @@ function bl_get_functions()
 
     if (count($functions)) {
         $table = '
-            <table>
+            <table id="bl_table_functions">
                 <thead>
                     <tr>
                         <th>Function</th>
@@ -1798,9 +1788,9 @@ function bl_get_functions()
 
                 foreach ($params as $param) {
                     if ($count > $num_required_params) {
-                        $function_params .= '[$' . $param->name . '], ';
+                        $function_params .= '[$'.$param->name.'], ';
                     } else {
-                        $function_params .= '$' . $param->name . ', ';
+                        $function_params .= '$'.$param->name.', ';
                     }
                     $count++;
                 }
@@ -1811,17 +1801,16 @@ function bl_get_functions()
                 }
 
                 $tr .= '<tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
-                        <td><strong>' . $function . '</strong> ( ' . rtrim($function_params,
-                    ', ') . ' )</td>
-                        <td>' . bl_link_file($reflection->getFileName(), $reflection->getStartLine()) . '</td>
-                        <td>' . $reflection->getStartLine() . '</td>
-                        <td>' . bl_get_comments($reflection) . '</td>
+                        <td><strong>'.$function.'</strong> ( '.rtrim($function_params,', ').' )</td>
+                        <td>'.bl_link_file($reflection->getFileName(), $reflection->getStartLine()).'</td>
+                        <td>'.$reflection->getStartLine().'</td>
+                        <td>'.bl_get_comments($reflection).'</td>
                     </tr>';
 
             }
         }
 
-        $table .= $tr . '</tbody></table>';
+        $table .= $tr.'</tbody></table>';
 
         $functions = $table;
     } else {
@@ -1866,7 +1855,7 @@ function bl_get_class_methods($reflection, $count)
             foreach ($method_params as $param) {
                 $method_params_text .= '$'.$param->name.', ';
             }
-            $result .= '<span class="bl_class_'.$count.'">' . $access .
+            $result .= '<span class="bl_class_'.$count.'">'.$access .
                 '<span class="bl_blue"><strong>'.$method->name.'</strong></span>('.
                 rtrim($method_params_text, ', ').');</span> ';
         }
@@ -1911,8 +1900,8 @@ function bl_get_class_properties($reflection, $count)
                 $access = '<span class="bl_grey">static</span> ';
             }
 
-            $result .= '<span class="bl_class_' . $count . '">' . $access .
-                '<span class="bl_blue"><strong>' . $prop->name . ';</strong></span></span> ';
+            $result .= '<span class="bl_class_'.$count.'">'.$access .
+                '<span class="bl_blue"><strong>'.$prop->name.';</strong></span></span> ';
         }
     }
 
@@ -1964,15 +1953,15 @@ function bl_get_classes()
                         $properties = bl_get_class_properties($reflection, $count);
                         $itr .= '
                             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
-                                <td><strong>' . $class . '</strong><br />
-                                    <a href="#" onclick="bl_expand(\'' . $count . '\')">expand</a></td>
-                                <td>' . $methods . '</td>
-                                <td>' . $properties . '</td>
+                                <td><strong>'.$class.'</strong><br />
+                                    <a href="#" onclick="bl_expand(\''.$count.'\')">expand</a></td>
+                                <td>'.$methods.'</td>
+                                <td>'.$properties.'</td>
                                 <td> - </td>
                                 <td>
-                                    <div id="bl_method_comments_expand_' . $count .
-                            '"></div>
-                                    <div id="bl_method_comments_' . $count .
+                                    <div id="bl_method_comments_expand_'.$count .
+                           '"></div>
+                                    <div id="bl_method_comments_'.$count .
                             '" style="display:none;"></div></td>
                             </tr>';
                     }
@@ -1991,17 +1980,17 @@ function bl_get_classes()
                     $properties = bl_get_class_properties($reflection, $count);
                     $utr .= '
                         <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
-                            <td><strong>' . $class . '</strong><br />
-                                <a href="#" onclick="bl_expand(\'' . $count . '\')">expand</a></td>
-                            <td>' . $methods . '</td>
-                            <td>' . $properties . '</td>
-                            <td>' . bl_link_file($reflection->getFileName(), $reflection->getStartLine()) . '</td>
-                            <td>' . $reflection->getStartLine() . '</td>
+                            <td><strong>'.$class.'</strong><br />
+                                <a href="#" onclick="bl_expand(\''.$count.'\')">expand</a></td>
+                            <td>'.$methods.'</td>
+                            <td>'.$properties.'</td>
+                            <td>'.bl_link_file($reflection->getFileName(), $reflection->getStartLine()).'</td>
+                            <td>'.$reflection->getStartLine().'</td>
                             <td>
-                                <div id="bl_method_comments_expand_' . $count . '">' .
-                        $comments_expand . '</div>
-                                <div id="bl_method_comments_' . $count .
-                        '" style="display:none;">' . $comments . '</div>
+                                <div id="bl_method_comments_expand_'.$count.'">' .
+                        $comments_expand.'</div>
+                                <div id="bl_method_comments_'.$count .
+                        '" style="display:none;">'.$comments.'</div>
                             </td>
                         </tr>';
                 }
@@ -2012,9 +2001,9 @@ function bl_get_classes()
 
     }
 
-    $result['user'] = str_replace('{mode}', 'uclasses', $table) . $utr .
+    $result['user'] = str_replace('{mode}', 'uclasses', $table).$utr .
         '</tbody></table>';
-    $result['internal'] = str_replace('{mode}', 'iclasses', $table) . $itr .
+    $result['internal'] = str_replace('{mode}', 'iclasses', $table).$itr .
         '</tbody></table>';
 
     return $result;
@@ -2037,7 +2026,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_oublock</td>
                 <td>block output operations</td>
-                <td>' . $usage['ru_oublock'] . '</td>
+                <td>'.$usage['ru_oublock'].'</td>
             </tr>';
         }
 
@@ -2046,7 +2035,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_inblock</td>
                 <td>block input operations</td>
-                <td>' . $usage['ru_inblock'] . '</td>
+                <td>'.$usage['ru_inblock'].'</td>
             </tr>';
         }
 
@@ -2055,7 +2044,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_msgsnd</td>
                 <td>messages sent</td>
-                <td>' . $usage['ru_msgsnd'] . '</td>
+                <td>'.$usage['ru_msgsnd'].'</td>
             </tr>';
         }
 
@@ -2064,7 +2053,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_msgrcv</td>
                 <td>messages received</td>
-                <td>' . $usage['ru_msgrcv'] . '</td>
+                <td>'.$usage['ru_msgrcv'].'</td>
             </tr>';
         }
 
@@ -2073,7 +2062,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_maxrss</td>
                 <td>maximum resident set size</td>
-                <td>' . $usage['ru_maxrss'] . '</td>
+                <td>'.$usage['ru_maxrss'].'</td>
             </tr>';
         }
 
@@ -2082,7 +2071,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_ixrss</td>
                 <td>integral shared memory size</td>
-                <td>' . $usage['ru_ixrss'] . '</td>
+                <td>'.$usage['ru_ixrss'].'</td>
             </tr>';
         }
 
@@ -2091,7 +2080,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_idrss</td>
                 <td>integral unshared data size</td>
-                <td>' . $usage['ru_idrss'] . '</td>
+                <td>'.$usage['ru_idrss'].'</td>
             </tr>';
         }
 
@@ -2100,7 +2089,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_minflt</td>
                 <td>page reclaims</td>
-                <td>' . $usage['ru_minflt'] . '</td>
+                <td>'.$usage['ru_minflt'].'</td>
             </tr>';
         }
 
@@ -2109,7 +2098,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_majflt</td>
                 <td>page faults</td>
-                <td>' . $usage['ru_majflt'] . '</td>
+                <td>'.$usage['ru_majflt'].'</td>
             </tr>';
         }
 
@@ -2118,7 +2107,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_nsignals</td>
                 <td>signals received</td>
-                <td>' . $usage['ru_nsignals'] . '</td>
+                <td>'.$usage['ru_nsignals'].'</td>
             </tr>';
         }
 
@@ -2127,7 +2116,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_nvcsw</td>
                 <td>voluntary context switches</td>
-                <td>' . $usage['ru_nvcsw'] . '</td>
+                <td>'.$usage['ru_nvcsw'].'</td>
             </tr>';
         }
 
@@ -2136,7 +2125,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_nivcsw</td>
                 <td>involuntary context switches</td>
-                <td>' . $usage['ru_nivcsw'] . '</td>
+                <td>'.$usage['ru_nivcsw'].'</td>
             </tr>';
         }
 
@@ -2145,7 +2134,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_nswap</td>
                 <td>swaps</td>
-                <td>' . $usage['ru_nswap'] . '</td>
+                <td>'.$usage['ru_nswap'].'</td>
             </tr>';
         }
 
@@ -2154,7 +2143,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_utime.tv_usec</td>
                 <td>user time used (microseconds)</td>
-                <td>' . $usage['ru_utime.tv_usec'] . '</td>
+                <td>'.$usage['ru_utime.tv_usec'].'</td>
             </tr>';
         }
 
@@ -2163,7 +2152,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_utime.tv_sec</td>
                 <td>user time used (seconds)</td>
-                <td>' . $usage['ru_utime.tv_sec'] . '</td>
+                <td>'.$usage['ru_utime.tv_sec'].'</td>
             </tr>';
         }
 
@@ -2172,7 +2161,7 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_stime.tv_usec</td>
                 <td>system time used (microseconds)</td>
-                <td>' . $usage['ru_stime.tv_usec'] . '</td>
+                <td>'.$usage['ru_stime.tv_usec'].'</td>
             </tr>';
         }
 
@@ -2181,17 +2170,17 @@ function bl_get_usage()
             <tr onmouseover="bl_highlight_row(true, this)" onmouseout="bl_highlight_row(false, this)">
                 <td>ru_stime.tv_sec</td>
                 <td>system time used (seconds)</td>
-                <td>' . $usage['ru_stime.tv_sec'] . '</td>
+                <td>'.$usage['ru_stime.tv_sec'].'</td>
             </tr>';
         }
 
         $result = '
         <table>
-            ' . $tr . '
+            '.$tr.'
         </table>';
     } else {
         $result = '<div class="bl_nothing"><p>Only for Linux systems. You are using ' .
-            PHP_OS . '</p></div>';
+            PHP_OS.'</p></div>';
     }
 
     return $result;
@@ -2237,9 +2226,9 @@ function bl_included_files()
 
             $result .= '
                 <tr>
-                    <td class="bl_col_title">' . bl_link_file($file, 0) .
+                    <td class="bl_col_title">'.bl_link_file($file, 0) .
                 '</td>
-                    <td class="bl_right">' . $filesize . '</td>
+                    <td class="bl_right">'.$filesize.'</td>
                 </tr>';
 
         }
@@ -2278,8 +2267,8 @@ function bl_get_times($times)
 
             $result .= '
                 <tr>
-                    <td>' . $time['label'] . '</td>
-                    <td class="bl_right">' . $time['time'] . '</td>
+                    <td>'.$time['label'].'</td>
+                    <td class="bl_right">'.$time['time'].'</td>
                 </tr>';
         }
         $result .= '
@@ -2308,9 +2297,9 @@ function bl_media($source, $type)
     $files = explode(',', $source);
     foreach ($files as $file) {
         if ($type == 'css') {
-            $result .= '<link rel="stylesheet" href="' . $file . '" type="text/css" />';
+            $result .= '<link rel="stylesheet" href="'.$file.'" type="text/css" />';
         } else {
-            $result .= '<script src="' . $file . '" type="text/javascript"></script>';
+            $result .= '<script src="'.$file.'" type="text/javascript"></script>';
         }
     }
 
@@ -2353,13 +2342,13 @@ function bl_js()
 {
     $result = "
     <script type=\"text/javascript\">
-    var bl_shortcuts=true,bl_key_msg=49,bl_key_sql=50,bl_key_vars=51,bl_key_profile=52,bl_key_time=53,bl_key_memory=54,bl_key_ajax=55,bl_key_php=56,bl_key_eval=57,bl_key_jscss=74,bl_key_opacity=79,bl_key_info=73,bl_key_plus=77,bl_key_close=88;var \$bl=function(id){return document.getElementById(id)};String.prototype.trim=function(){return this.replace(/^\s+|\s+\$/g,\"\")};String.prototype.ltrim=function(){return this.replace(/^\s+/,\"\")};String.prototype.rtrim=function(){return this.replace(/\s+\$/,\"\")};Element.prototype.hasClass=function(class_name){this.className=this.className.replace(/^\s+|\s+\$/g,\"\");this.className=\" \"+this.className+\" \";if (this.className.search(\" \"+class_name+\" \")!==-1){return true}this.className=this.className.replace(/^\s+|\s+\$/g,\"\");return false};Element.prototype.removeClass=function(class_name){this.className=this.className.replace(class_name,'');this.className=this.className.replace(/^\s+|\s+\$/g,\"\")};Element.prototype.addClass=function(class_name){this.className=this.className+' '+class_name;this.className=this.className.replace(/^\s+|\s+\$/g,\"\")};function bl_toggle(obj,mode){var el=document.getElementById(obj);if (mode==='more'){document.getElementById(\"bl_debug_content\").style.display='block';if (el.className==='bl_full_panel'){el.className='bl_half_panel'} else{el.className='bl_full_panel'}} else{if (el.style.display!=='block'){el.style.display='block'} else{el.style.display='none'}}}function randomString(length){var str,i,chars='abcdefghiklmnopqrstuvwxyz'.split('');if (!length){length=Math.floor(Math.random()*chars.length)}for (i=0;i<length;i+=1){str+=chars[Math.floor(Math.random()*chars.length)]}return str}function time(ms){var t=ms/1000;return Math.round(t*100)/100}function bl_listen(event,elem,func,id){if (id){elem=\$bl(elem)} else{elem=document}if (elem){if (elem.addEventListener){elem.addEventListener(event,func,false)} elseif (elem.attachEvent){var r=elem.attachEvent(\"on\"+event,func);return r} else{throw'No es posible añadir evento';}}}bl_listen('keyup','body',bl_keydown);function bl_keydown(e){var target;if (!bl_shortcuts){return}if (navigator.appName==='Microsoft Internet Explorer'){e=window.event;target=e.srcElement.nodeName.toLowerCase()} else{target=e.target.localName}if (target==='html'||target==='body'){if (e.keyCode===bl_key_msg){bl_debug_set_panel('msg')} elseif (e.keyCode===bl_key_sql){bl_debug_set_panel('sql')} elseif (e.keyCode===bl_key_profile){bl_debug_set_panel('profile')} elseif (e.keyCode===bl_key_vars){bl_debug_set_panel('vars')} elseif (e.keyCode===bl_key_time){bl_debug_set_panel('time')} elseif (e.keyCode===bl_key_memory){bl_debug_set_panel('memory')} elseif (e.keyCode===bl_key_ajax){bl_debug_set_panel('ajax')} elseif (e.keyCode===bl_key_php){bl_debug_set_panel('php')} elseif (e.keyCode===bl_key_eval){bl_debug_set_panel('eval')} elseif (e.keyCode===bl_key_jscss){bl_toggle('bl_tool_box')} elseif (e.keyCode===bl_key_opacity){bl_opacity()} elseif (e.keyCode===bl_key_info){bl_debug_set_panel('info')} elseif (e.keyCode===bl_key_plus){bl_setPanelSize('plus')} elseif (e.keyCode===bl_key_close){bl_setPanelSize('close')}}}function bl_view_html(el){var el1=document.getElementById('bl_view_html_'+el),el2=document.getElementById('bl_view_'+el),el3=document.getElementById('bl_view_more_'+el);if (el1.style.display==='block'){el1.style.display='none';el2.style.display='block';el3.style.display='none'} else{el1.style.display='block';el2.style.display='none';el3.style.display='none'}}function bl_show_errors(){bl_toggle('bl_show_errors')}function bl_alert_errors(){var bl_interval=setInterval('bl_show_errors()',500);setTimeout(\"clearInterval(\"+bl_interval+\")\",3000)}function bl_opacity(){var el=\$bl('bl_debug');if (el.hasClass('bl_opacity')){el.removeClass('bl_opacity')} else{el.addClass('bl_opacity')}}function bl_setPanelSize(size){var panel_size='close';if (size==='plus'){if (\$bl('bl_debug_content').className==='bl_half_panel'){\$bl('bl_debug_content').className='bl_full_panel';panel_size='full'} else{\$bl('bl_debug_content').className='bl_half_panel';panel_size='half'}} elseif (size==='close'){\$bl('bl_debug_content').className='bl_close_panel';panel_size='close'} else{\$bl('bl_debug_content').className='bl_'+size+'_panel';panel_size='half'}if (panel_size==='close'){bl_setCookie('__bl_panel_active','none',1)}bl_setCookie('panel_size_bl',panel_size,1)}function bl_debug_set_panel(panel){var c1=\"bl_debug_panel\",c2=\"bl_debug_panel_active\",c3=\"bl_debug_btn\",c4=\"bl_debug_activo\";if (\$bl(\"bl_debug_\"+panel).hasClass(\"bl_debug_panel_active\")){\$bl(\"bl_debug_\"+panel).className=c1;\$bl(\"bl_debug_content\").className='bl_close_panel';\$bl(c3+\"_\"+panel).className=c3;bl_setPanelSize('close')} else{\$bl(\"bl_debug_msg\").className=c1;\$bl(\"bl_debug_sql\").className=c1;\$bl(\"bl_debug_vars\").className=c1;\$bl(\"bl_debug_time\").className=c1;\$bl(\"bl_debug_memory\").className=c1;\$bl(\"bl_debug_ajax\").className=c1;\$bl(\"bl_debug_info\").className=c1;\$bl(\"bl_debug_php\").className=c1;\$bl(\"bl_debug_eval\").className=c1;\$bl(\"bl_debug_profile\").className=c1;\$bl(\"bl_debug_\"+panel).className=c1+\" \"+c2;\$bl(\"bl_debug_btn_msg\").className=c3;\$bl(c3+\"_sql\").className=c3;\$bl(c3+\"_vars\").className=c3;\$bl(c3+\"_time\").className=c3;\$bl(c3+\"_memory\").className=c3;\$bl(c3+\"_ajax\").className=c3;\$bl(c3+\"_eval\").className=c3;\$bl(c3+\"_php\").className=c3;\$bl(c3+\"_profile\").className=c3;\$bl(c3+\"_\"+panel).className=c3+\" \"+c4;if (\$bl(\"bl_debug_content\").hasClass('bl_close_panel')){\$bl(\"bl_debug_content\").className='bl_half_panel';bl_setPanelSize('half')}}bl_setCookie('__bl_panel_active',panel,1)}function bl_debug_set_msg(type){var i,bl_search,bl_search2,e,allHTMLTags=document.getElementsByTagName(\"tr\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_normal_tr')!==-1){allHTMLTags[i].className=allHTMLTags[i].className.replace('bl_msg_activo','');bl_search=allHTMLTags[i].className.search('bl_debug_msg_'+type);bl_search2=allHTMLTags[i].className.search('bl_msg_activo');if (bl_search!==-1){if (bl_search2===-1){allHTMLTags[i].className=allHTMLTags[i].className+' bl_msg_activo'}} else{if (type==='all'){if (bl_search2===-1){allHTMLTags[i].className=allHTMLTags[i].className+' bl_msg_activo'}}}}}allHTMLTags=document.getElementsByTagName(\"a\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_debug_msg_btn')!==-1){allHTMLTags[i].className='bl_debug_msg_btn'}}e=document.getElementById('bl_debug_msg_btn_'+type);e.addClass('bl_debug_msg_btn_activo')}function bl_debug_set_var(panel){var i,e,allHTMLTags=document.getElementsByTagName(\"div\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_debug_var_panel')!==-1){allHTMLTags[i].className='bl_debug_var_panel'}}allHTMLTags=document.getElementsByTagName(\"a\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_debug_var_btn')!==-1){allHTMLTags[i].className='bl_debug_var_btn'}}e=document.getElementById('bl_debug_var_btn_'+panel);e.addClass('bl_debug_var_btn_activo');e=document.getElementById('bl_debug_var_'+panel);e.addClass('bl_debug_var_panel_activo')}function bl_debug_set_php(panel){var i,e,allHTMLTags=document.getElementsByTagName(\"a\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_debug_php_btn')!==-1){allHTMLTags[i].className='bl_debug_php_btn'}}allHTMLTags=document.getElementsByTagName(\"div\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_debug_php_panel')!==-1){allHTMLTags[i].className='bl_debug_php_panel'}}e=document.getElementById('bl_debug_php_btn_'+panel);e.addClass('bl_debug_php_btn_activo');e=document.getElementById('bl_debug_php_'+panel);e.addClass('bl_debug_php_panel_activo')}function bl_debug_set_eval(panel){var i,e,allHTMLTags=document.getElementsByTagName(\"a\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_debug_eval_btn')!==-1){allHTMLTags[i].className='bl_debug_eval_btn'}}allHTMLTags=document.getElementsByTagName(\"div\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_debug_eval_panel')!==-1){allHTMLTags[i].className='bl_debug_eval_panel'}}e=document.getElementById('bl_debug_eval_btn_'+panel);e.addClass('bl_debug_eval_btn_activo');e=document.getElementById('bl_debug_eval_'+panel);e.addClass('bl_debug_eval_panel_activo')}function bl_debug_set_profile(panel){var i,e,allHTMLTags=document.getElementsByTagName(\"a\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_debug_profile_btn')!==-1){allHTMLTags[i].className='bl_debug_profile_btn'}}allHTMLTags=document.getElementsByTagName(\"div\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_debug_profile_panel')!==-1){allHTMLTags[i].className='bl_debug_profile_panel'}}e=document.getElementById('bl_debug_profile_btn_'+panel);e.addClass('bl_debug_profile_btn_activo');e=document.getElementById('bl_debug_profile_'+panel);e.addClass('bl_debug_profile_panel_activo')}function bl_expand(count){var i,allHTMLTags=document.getElementsByTagName(\"span\");for (i=0;i<allHTMLTags.length;i+=1){if (allHTMLTags[i].className.search('bl_class_'+count)!==-1){if (allHTMLTags[i].style.display!=='block'){allHTMLTags[i].style.display='block';\$bl('bl_method_comments_expand_'+count).style.display='none';\$bl('bl_method_comments_'+count).style.display='block'} else{allHTMLTags[i].style.display='inline';\$bl('bl_method_comments_expand_'+count).style.display='block';\$bl('bl_method_comments_'+count).style.display='none'}}}}function filter(phrase,id){var words=\$bl(phrase).value.toLowerCase().split(\" \"),table=document.getElementById(id),ele,r,i,displayStyle;for (r=1;r<table.rows.length;r+=1){ele=table.rows[r].innerHTML.replace(/<[^>]+>/g,\"\");displayStyle=\"none\";for (i=0;i<words.length;i+=1){if (ele.toLowerCase().indexOf(words[i])>=0){displayStyle=\"\"} else{displayStyle=\"none\";break}}table.rows[r].style.display=displayStyle}}function filterUser(){filter('bl_filter_user','bl_table_user')}function filterSpecial(){filter('bl_filter_special','bl_table_special')}function filterFunctions(){filter('bl_filter_functions','bl_table_functions')}function filterUclasses(){filter('bl_filter_uclasses','bl_table_uclasses')}function filterIclasses(){filter('bl_filter_iclasses','bl_table_iclasses')}function filterConstants(){filter('bl_filter_constants','bl_table_constants')}function filterGet(){filter('bl_filter_get','bl_table_get')}function filterPost(){filter('bl_filter_post','bl_table_post')}function filterSession(){filter('bl_filter_session','bl_table_session')}function filterCookie(){filter('bl_filter_cookie','bl_table_cookie')}function filterFiles(){filter('bl_filter_files','bl_table_files')}function filterServer(){filter('bl_filter_server','bl_table_server')}bl_listen('keyup','bl_filter_user',filterUser,true);bl_listen('keyup','bl_filter_special',filterSpecial,true);bl_listen('keyup','bl_filter_functions',filterFunctions,true);bl_listen('keyup','bl_filter_uclasses',filterUclasses,true);bl_listen('keyup','bl_filter_iclasses',filterIclasses,true);bl_listen('keyup','bl_filter_constants',filterConstants,true);bl_listen('keyup','bl_filter_get',filterGet,true);bl_listen('keyup','bl_filter_post',filterPost,true);bl_listen('keyup','bl_filter_session',filterSession,true);bl_listen('keyup','bl_filter_cookie',filterCookie,true);bl_listen('keyup','bl_filter_files',filterFiles,true);bl_listen('keyup','bl_filter_server',filterServer,true);function bl_ajax(){var xmlhttp=false;try{xmlhttp=new ActiveXObject(\"Msxml2.XMLHTTP\")}catch(e){try{xmlhttp=new ActiveXObject(\"Microsoft.XMLHTTP\")}catch(E){xmlhttp=false}}if (!xmlhttp&&typeof XMLHttpRequest!=='undefined'){xmlhttp=new XMLHttpRequest()}return xmlhttp}function bl_del_var(var_name,url,type,key,tr_id,url_var_name){var ajax;url=url+'?'+url_var_name+'=1&var='+var_name+'&type='+type+'&bl_key='+key;\$bl('bl_loading').style.display='block';ajax=bl_ajax();ajax.open(\"GET\",url,true);ajax.onreadystatechange=function(){if (ajax.readyState===4){\$bl('bl_loading').style.display='none';if (ajax.responseText==='ok'){var tr=\$bl(tr_id);tr.innerHTML='<td colspan=\"5\">var \$'+type+'[\"'+var_name+'\"]  deleted</td>'} elseif (ajax.responseText==='error-key'){alert('There\'re a problem with your secret key')} elseif (ajax.responseText==='error-cookie'){alert('Sorry, I can\t delete this cookie.')} else{alert('Error. No vars deleted!')}}};ajax.send(null)}function bl_load_file(file,line,url,key,url_var_name){if (!line){line=0}url=url+\"?\"+url_var_name+\"=\"+file+\"&line=\"+line+\"&key=\"+key;\$bl('bl_loading').style.display='block';\$bl('bl_file_container').innerHTML='';ajax=bl_ajax();ajax.open(\"GET\",url,true);ajax.onreadystatechange=function(){var scroll;if (ajax.readyState===4){\$bl('bl_loading').style.display='none';if (ajax.responseText==='error-key'){alert('There\'re a problem with your secret key')} elseif (ajax.responseText==='error-file'){alert('File not found.')} elseif (ajax.responseText==='error'){alert('Error...')} else{\$bl('bl_file_container').scrollTop=0;\$bl('bl_file_container').innerHTML=ajax.responseText;\$bl('bl_file_container').style.display='block';scroll=parseInt(line)-10;\$bl('line_'+scroll).scrollIntoView()}}};ajax.send(null)}bl_listen('submit','bl_eval_form',bl_eval_code,'bl_eval_form');function bl_eval_code(){var content=\$bl('bl_eval_code').value,url=\$bl('bl_url').value,key=\$bl('bl_secret_key').value,url_var_name=\$bl('bl_eval_url_name').value;url=url+\"?\"+url_var_name+\"=\"+content+\"&bl_key=\"+key;\$bl('bl_loading').style.display='block';ajax=bl_ajax();ajax.open(\"POST\",url,true);ajax.onreadystatechange=function(){if (ajax.readyState===4){\$bl('bl_loading').style.display='none';if (ajax.responseText==='error-key'){alert('There\'re a problem with your secret key')} elseif (ajax.responseText==='error'){alert('Unknow Error...')} else{\$bl('bl_debug_eval_result').innerHTML=ajax.responseText;bl_debug_set_eval('result')}}};ajax.send(null);return false}function bl_highlight_row(highlight,el){if (highlight===true){el.addClass('bl_highlight_row')} else{el.removeClass('bl_highlight_row')}}function view_array(id){var div=document.getElementById(id),a=document.getElementById(id.replace('div_','a_'));if (div.style.display==='block'){div.style.display='none';a.style.display='block'} else{div.style.display='block';a.style.display='none'}}function htmlentities(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;')}function bl_get_js(){var html='',i,filename,viewSource='',js=document.getElementsByTagName('script');if (js.length>0){if (navigator.appName==='Netscape'){viewSource='view-source:'}for (i=0;i<js.length;i+=1){if (js[i].src.length){filename=js[i].src.substring(js[i].src.lastIndexOf('/')+1);html=html+'<li><a href=\"'+viewSource+js[i].src+'\" target=\"_blank\">'+filename+'</a></li>'}}\$bl('bl_js').innerHTML='<h3>Javascript Files</h3><ul>'+html+'</ul>'}}function bl_get_css(){var html='',i,filename,viewSource='',css=document.getElementsByTagName('link');if (css.length>0){\$bl('bl_css').innerHTML=\"\";if (navigator.appName==='Netscape'){viewSource='view-source:'}for (i=0;i<css.length;i+=1){if (css[i].href.length&&css[i].rel==='stylesheet'){filename=css[i].href.substring(css[i].href.lastIndexOf('/')+1);html=html+'<li><a href=\"'+viewSource+css[i].href+'\" target=\"_blank\">'+filename+'</a></li>'}}\$bl('bl_css').innerHTML='<h3>CSS Files</h3><ul>'+html+'</ul>'}}bl_get_js();bl_get_css();function bl_setCookie(c_name,value,exdays){var c_value,exdate=new Date();exdate.setDate(exdate.getDate()+exdays);c_value=escape(value)+((exdays===null)?\"\":\"; expires=\"+exdate.toUTCString());document.cookie=c_name+\"=\"+c_value+'; path=/'}
+    var bl_shortcuts=true,bl_key_msg=49,bl_key_sql=50,bl_key_vars=51,bl_key_profile=52,bl_key_time=53,bl_key_memory=54,bl_key_ajax=55,bl_key_php=56,bl_key_eval=57,bl_key_jscss=74,bl_key_opacity=79,bl_key_info=73,bl_key_plus=77,bl_key_close=88;var \$bl=function(id){return document.getElementById(id)};String.prototype.trim=function(){return this.replace(/^\s+|\s+\$/g,\"\")};String.prototype.ltrim=function(){return this.replace(/^\s+/,\"\")};String.prototype.rtrim=function(){return this.replace(/\s+\$/,\"\")};Element.prototype.hasClass=function(class_name){this.className=this.className.replace(/^\s+|\s+\$/g,\"\");this.className=\" \"+this.className+\" \";if(this.className.search(\" \"+class_name+\" \")!==-1){return true}this.className=this.className.replace(/^\s+|\s+\$/g,\"\");return false};Element.prototype.removeClass=function(class_name){this.className=this.className.replace(class_name,'');this.className=this.className.replace(/^\s+|\s+\$/g,\"\")};Element.prototype.addClass=function(class_name){this.className=this.className+' '+class_name;this.className=this.className.replace(/^\s+|\s+\$/g,\"\")};function bl_toggle(obj,mode){var el=document.getElementById(obj);if(mode==='more'){document.getElementById(\"bl_debug_content\").style.display='block';if(el.className==='bl_full_panel'){el.className='bl_half_panel'}else{el.className='bl_full_panel'}}else{if(el.style.display!=='block'){el.style.display='block'}else{el.style.display='none'}}}function randomString(length){var str,i,chars='abcdefghiklmnopqrstuvwxyz'.split('');if(!length){length=Math.floor(Math.random()*chars.length)}for(i=0;i<length;i+=1){str+=chars[Math.floor(Math.random()*chars.length)]}return str}function time(ms){var t=ms/1000;return Math.round(t*100)/100}function bl_listen(event,elem,func,id){if(id){elem=\$bl(elem)}else{elem=document}if(elem){if(elem.addEventListener){elem.addEventListener(event,func,false)}else if(elem.attachEvent){var r=elem.attachEvent(\"on\"+event,func);return r}else{throw'No es posible añadir evento';}}}bl_listen('keyup','body',bl_keydown);function bl_keydown(e){var target;if(!bl_shortcuts){return}if(navigator.appName==='Microsoft Internet Explorer'){e=window.event;target=e.srcElement.nodeName.toLowerCase()}else{target=e.target.localName}if(target==='html'||target==='body'){if(e.keyCode===bl_key_msg){bl_debug_set_panel('msg')}else if(e.keyCode===bl_key_sql){bl_debug_set_panel('sql')}else if(e.keyCode===bl_key_profile){bl_debug_set_panel('profile')}else if(e.keyCode===bl_key_vars){bl_debug_set_panel('vars')}else if(e.keyCode===bl_key_time){bl_debug_set_panel('time')}else if(e.keyCode===bl_key_memory){bl_debug_set_panel('memory')}else if(e.keyCode===bl_key_ajax){bl_debug_set_panel('ajax')}else if(e.keyCode===bl_key_php){bl_debug_set_panel('php')}else if(e.keyCode===bl_key_eval){bl_debug_set_panel('eval')}else if(e.keyCode===bl_key_jscss){bl_toggle('bl_tool_box')}else if(e.keyCode===bl_key_opacity){bl_opacity()}else if(e.keyCode===bl_key_info){bl_debug_set_panel('info')}else if(e.keyCode===bl_key_plus){bl_setPanelSize('plus')}else if(e.keyCode===bl_key_close){bl_setPanelSize('close')}}}function bl_view_html(el){var el1=document.getElementById('bl_view_html_'+el),el2=document.getElementById('bl_view_'+el),el3=document.getElementById('bl_view_more_'+el);if(el1.style.display==='block'){el1.style.display='none';el2.style.display='block';el3.style.display='none'}else{el1.style.display='block';el2.style.display='none';el3.style.display='none'}}function bl_show_errors(){bl_toggle('bl_show_errors')}function bl_alert_errors(){var bl_interval=setInterval(bl_show_errors(),500);setTimeout(\"clearInterval(\"+bl_interval+\")\",3000)}function bl_opacity(){var el=\$bl('bl_debug');if(el.hasClass('bl_opacity')){el.removeClass('bl_opacity')}else{el.addClass('bl_opacity')}}function bl_setPanelSize(size){var panel_size='close';if(size==='plus'){if(\$bl('bl_debug_content').className==='bl_half_panel'){\$bl('bl_debug_content').className='bl_full_panel';panel_size='full'}else{\$bl('bl_debug_content').className='bl_half_panel';panel_size='half'}}else if(size==='close'){\$bl('bl_debug_content').className='bl_close_panel';panel_size='close'}else{\$bl('bl_debug_content').className='bl_'+size+'_panel';panel_size='half'}if(panel_size==='close'){bl_setCookie('__bl_panel_active','none',1)}bl_setCookie('panel_size_bl',panel_size,1)}function bl_debug_set_panel(panel){var c1=\"bl_debug_panel\",c2=\"bl_debug_panel_active\",c3=\"bl_debug_btn\",c4=\"bl_debug_activo\";if(\$bl(\"bl_debug_\"+panel).hasClass(\"bl_debug_panel_active\")){\$bl(\"bl_debug_\"+panel).className=c1;\$bl(\"bl_debug_content\").className='bl_close_panel';\$bl(c3+\"_\"+panel).className=c3;bl_setPanelSize('close')}else{\$bl(\"bl_debug_msg\").className=c1;\$bl(\"bl_debug_sql\").className=c1;\$bl(\"bl_debug_vars\").className=c1;\$bl(\"bl_debug_time\").className=c1;\$bl(\"bl_debug_memory\").className=c1;\$bl(\"bl_debug_ajax\").className=c1;\$bl(\"bl_debug_info\").className=c1;\$bl(\"bl_debug_php\").className=c1;\$bl(\"bl_debug_eval\").className=c1;\$bl(\"bl_debug_profile\").className=c1;\$bl(\"bl_debug_\"+panel).className=c1+\" \"+c2;\$bl(\"bl_debug_btn_msg\").className=c3;\$bl(c3+\"_sql\").className=c3;\$bl(c3+\"_vars\").className=c3;\$bl(c3+\"_time\").className=c3;\$bl(c3+\"_memory\").className=c3;\$bl(c3+\"_ajax\").className=c3;\$bl(c3+\"_eval\").className=c3;\$bl(c3+\"_php\").className=c3;\$bl(c3+\"_profile\").className=c3;\$bl(c3+\"_\"+panel).className=c3+\" \"+c4;if(\$bl(\"bl_debug_content\").hasClass('bl_close_panel')){\$bl(\"bl_debug_content\").className='bl_half_panel';bl_setPanelSize('half')}}bl_setCookie('__bl_panel_active',panel,1)}function bl_debug_set_msg(type){var i,bl_search,bl_search2,e,allHTMLTags=document.getElementsByTagName(\"tr\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_normal_tr')!==-1){allHTMLTags[i].className=allHTMLTags[i].className.replace('bl_msg_activo','');bl_search=allHTMLTags[i].className.search('bl_debug_msg_'+type);bl_search2=allHTMLTags[i].className.search('bl_msg_activo');if(bl_search!==-1){if(bl_search2===-1){allHTMLTags[i].className=allHTMLTags[i].className+' bl_msg_activo'}}else{if(type==='all'){if(bl_search2===-1){allHTMLTags[i].className=allHTMLTags[i].className+' bl_msg_activo'}}}}}allHTMLTags=document.getElementsByTagName(\"a\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_debug_msg_btn')!==-1){allHTMLTags[i].className='bl_debug_msg_btn'}}e=document.getElementById('bl_debug_msg_btn_'+type);e.addClass('bl_debug_msg_btn_activo')}function bl_debug_set_var(panel){var i,e,allHTMLTags=document.getElementsByTagName(\"div\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_debug_var_panel')!==-1){allHTMLTags[i].className='bl_debug_var_panel'}}allHTMLTags=document.getElementsByTagName(\"a\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_debug_var_btn')!==-1){allHTMLTags[i].className='bl_debug_var_btn'}}e=document.getElementById('bl_debug_var_btn_'+panel);e.addClass('bl_debug_var_btn_activo');e=document.getElementById('bl_debug_var_'+panel);e.addClass('bl_debug_var_panel_activo')}function bl_debug_set_php(panel){var i,e,allHTMLTags=document.getElementsByTagName(\"a\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_debug_php_btn')!==-1){allHTMLTags[i].className='bl_debug_php_btn'}}allHTMLTags=document.getElementsByTagName(\"div\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_debug_php_panel')!==-1){allHTMLTags[i].className='bl_debug_php_panel'}}e=document.getElementById('bl_debug_php_btn_'+panel);e.addClass('bl_debug_php_btn_activo');e=document.getElementById('bl_debug_php_'+panel);e.addClass('bl_debug_php_panel_activo')}function bl_debug_set_eval(panel){var i,e,allHTMLTags=document.getElementsByTagName(\"a\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_debug_eval_btn')!==-1){allHTMLTags[i].className='bl_debug_eval_btn'}}allHTMLTags=document.getElementsByTagName(\"div\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_debug_eval_panel')!==-1){allHTMLTags[i].className='bl_debug_eval_panel'}}e=document.getElementById('bl_debug_eval_btn_'+panel);e.addClass('bl_debug_eval_btn_activo');e=document.getElementById('bl_debug_eval_'+panel);e.addClass('bl_debug_eval_panel_activo')}function bl_debug_set_profile(panel){var i,e,allHTMLTags=document.getElementsByTagName(\"a\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_debug_profile_btn')!==-1){allHTMLTags[i].className='bl_debug_profile_btn'}}allHTMLTags=document.getElementsByTagName(\"div\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_debug_profile_panel')!==-1){allHTMLTags[i].className='bl_debug_profile_panel'}}e=document.getElementById('bl_debug_profile_btn_'+panel);e.addClass('bl_debug_profile_btn_activo');e=document.getElementById('bl_debug_profile_'+panel);e.addClass('bl_debug_profile_panel_activo')}function bl_expand(count){var i,allHTMLTags=document.getElementsByTagName(\"span\");for(i=0;i<allHTMLTags.length;i+=1){if(allHTMLTags[i].className.search('bl_class_'+count)!==-1){if(allHTMLTags[i].style.display!=='block'){allHTMLTags[i].style.display='block';\$bl('bl_method_comments_expand_'+count).style.display='none';\$bl('bl_method_comments_'+count).style.display='block'}else{allHTMLTags[i].style.display='inline';\$bl('bl_method_comments_expand_'+count).style.display='block';\$bl('bl_method_comments_'+count).style.display='none'}}}}function filter(phrase,id){var words=\$bl(phrase).value.toLowerCase().split(\" \"),table=document.getElementById(id),ele,r,i,displayStyle;for(r=1;r<table.rows.length;r+=1){ele=table.rows[r].innerHTML.replace(/<[^>]+>/g,\"\");displayStyle=\"none\";for(i=0;i<words.length;i+=1){if(ele.toLowerCase().indexOf(words[i])>=0){displayStyle=\"\"}else{displayStyle=\"none\";break}}table.rows[r].style.display=displayStyle}}function filterUser(){filter('bl_filter_user','bl_table_user')}function filterSpecial(){filter('bl_filter_special','bl_table_special')}function filterFunctions(){filter('bl_filter_functions','bl_table_functions')}function filterUclasses(){filter('bl_filter_uclasses','bl_table_uclasses')}function filterIclasses(){filter('bl_filter_iclasses','bl_table_iclasses')}function filterConstants(){filter('bl_filter_constants','bl_table_constants')}function filterGet(){filter('bl_filter_get','bl_table_get')}function filterPost(){filter('bl_filter_post','bl_table_post')}function filterSession(){filter('bl_filter_session','bl_table_session')}function filterCookie(){filter('bl_filter_cookie','bl_table_cookie')}function filterFiles(){filter('bl_filter_files','bl_table_files')}function filterServer(){filter('bl_filter_server','bl_table_server')}bl_listen('keyup','bl_filter_user',filterUser,true);bl_listen('keyup','bl_filter_special',filterSpecial,true);bl_listen('keyup','bl_filter_functions',filterFunctions,true);bl_listen('keyup','bl_filter_uclasses',filterUclasses,true);bl_listen('keyup','bl_filter_iclasses',filterIclasses,true);bl_listen('keyup','bl_filter_constants',filterConstants,true);bl_listen('keyup','bl_filter_get',filterGet,true);bl_listen('keyup','bl_filter_post',filterPost,true);bl_listen('keyup','bl_filter_session',filterSession,true);bl_listen('keyup','bl_filter_cookie',filterCookie,true);bl_listen('keyup','bl_filter_files',filterFiles,true);bl_listen('keyup','bl_filter_server',filterServer,true);function bl_ajax(){var xmlhttp=false;try{xmlhttp=new ActiveXObject(\"Msxml2.XMLHTTP\")}catch(e){try{xmlhttp=new ActiveXObject(\"Microsoft.XMLHTTP\")}catch(E){xmlhttp=false}}if(!xmlhttp&&typeof XMLHttpRequest!=='undefined'){xmlhttp=new XMLHttpRequest()}return xmlhttp}function bl_del_var(var_name,url,type,key,tr_id,url_var_name){var ajax;url=url+'?'+url_var_name+'=1&var='+var_name+'&type='+type+'&bl_key='+key;\$bl('bl_loading').style.display='block';ajax=bl_ajax();ajax.open(\"GET\",url,true);ajax.onreadystatechange=function(){if(ajax.readyState===4){\$bl('bl_loading').style.display='none';if(ajax.responseText==='ok'){var tr=\$bl(tr_id);tr.innerHTML='<td colspan=\"5\">var \$'+type+'[\"'+var_name+'\"]  deleted</td>'}else if(ajax.responseText==='error-key'){alert('There\'re a problem with your secret key')}else if(ajax.responseText==='error-cookie'){alert('Sorry, I can\t delete this cookie.')}else{alert('Error. No vars deleted!')}}};ajax.send(null)}function bl_load_file(file,line,url,key,url_var_name){if(!line){line=0}url=url+\"?\"+url_var_name+\"=\"+file+\"&line=\"+line+\"&key=\"+key;\$bl('bl_loading').style.display='block';\$bl('bl_file_container').innerHTML='';ajax=bl_ajax();ajax.open(\"GET\",url,true);ajax.onreadystatechange=function(){var scroll;if(ajax.readyState===4){\$bl('bl_loading').style.display='none';if(ajax.responseText==='error-key'){alert('There\'re a problem with your secret key')}else if(ajax.responseText==='error-file'){alert('File not found.')}else if(ajax.responseText==='error'){alert('Error...')}else{\$bl('bl_file_container').scrollTop=0;\$bl('bl_file_container').innerHTML=ajax.responseText;\$bl('bl_file_container').style.display='block';scroll=parseInt(line)-10;\$bl('line_'+scroll).scrollIntoView()}}};ajax.send(null)}bl_listen('submit','bl_eval_form',bl_eval_code,'bl_eval_form');function bl_eval_code(){var content=\$bl('bl_eval_code').value,url=\$bl('bl_url').value,key=\$bl('bl_secret_key').value,url_var_name=\$bl('bl_eval_url_name').value;url=url+\"?\"+url_var_name+\"=\"+content+\"&bl_key=\"+key;\$bl('bl_loading').style.display='block';ajax=bl_ajax();ajax.open(\"POST\",url,true);ajax.onreadystatechange=function(){if(ajax.readyState===4){\$bl('bl_loading').style.display='none';if(ajax.responseText==='error-key'){alert('There\'re a problem with your secret key')}else if(ajax.responseText==='error'){alert('Unknow Error...')}else{\$bl('bl_debug_eval_result').innerHTML=ajax.responseText;bl_debug_set_eval('result')}}};ajax.send(null);return false}function bl_highlight_row(highlight,el){if(highlight===true){el.addClass('bl_highlight_row')}else{el.removeClass('bl_highlight_row')}}function view_array(id){var div=document.getElementById(id),a=document.getElementById(id.replace('div_','a_'));if(div.style.display==='block'){div.style.display='none';a.style.display='block'}else{div.style.display='block';a.style.display='none'}}function htmlentities(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;')}function bl_get_js(){var html='',i,filename,viewSource='',js=document.getElementsByTagName('script');if(js.length>0){if(navigator.appName==='Netscape'){viewSource='view-source:'}for(i=0;i<js.length;i+=1){if(js[i].src.length){filename=js[i].src.substring(js[i].src.lastIndexOf('/')+1);html=html+'<li><a href=\"'+viewSource+js[i].src+'\" target=\"_blank\">'+filename+'</a></li>'}}\$bl('bl_js').innerHTML='<h3>Javascript Files</h3><ul>'+html+'</ul>'}}function bl_get_css(){var html='',i,filename,viewSource='',css=document.getElementsByTagName('link');if(css.length>0){\$bl('bl_css').innerHTML=\"\";if(navigator.appName==='Netscape'){viewSource='view-source:'}for(i=0;i<css.length;i+=1){if(css[i].href.length&&css[i].rel==='stylesheet'){filename=css[i].href.substring(css[i].href.lastIndexOf('/')+1);html=html+'<li><a href=\"'+viewSource+css[i].href+'\" target=\"_blank\">'+filename+'</a></li>'}}\$bl('bl_css').innerHTML='<h3>CSS Files</h3><ul>'+html+'</ul>'}}bl_get_js();bl_get_css();function bl_setCookie(c_name,value,exdays){var c_value,exdate=new Date();exdate.setDate(exdate.getDate()+exdays);c_value=escape(value)+((exdays===null)?\"\":\"; expires=\"+exdate.toUTCString());document.cookie=c_name+\"=\"+c_value+'; path=/'}
     </script>";
 
     if (_bl_ajax_active) {
         $result .= "
         <script type=\"text/javascript\">
-          function bl_params_to_html(params,id){if (params){var param,i,p,ps;ps=params.split('&');param='<table>';for (i in ps){p=ps[i].split('=');param=param+'<tr><td><strong>'+p[0]+'</strong></td><td>'+p[1]+'</td>'}param=param+'</table>';return param}}function bl_msg_ajax(data,el_id){var params=data.params,e=document.getElementById('bl_debug_ajax_box');e.innerHTML='<div id=\"bl_'+el_id+'\" class=\"bl_ajax_msg\"><div class=\"bl_ajax_header\"><strong>'+data.method+'</strong> <a href=\"javascript:bl_ajax_response(\''+el_id+'\');\">'+data.url+'</a> <span id=\"bl_c_'+el_id+'\" class=\"\">[loading...]</span></div> <div class=\"bl_ajax_request\" id=\"bl_ajax_resume_'+el_id+'\" style=\"display:none;\"><ul class=\"bl_ajax_menu\"><li><a href=\"javascript:bl_set_ajax_view(\''+el_id+'\',\'params\');\">Params</a></li><li> <a href=\"javascript:bl_set_ajax_view(\''+el_id+'\',\'response\');\" class=\"bl_active\">Response</a></li></ul><div id=\"bl_d_'+el_id+'\" class=\"bl_ajax_response\">  </div><div id=\"bl_p_'+el_id+'\" style=\"display:none;\" class=\"bl_ajax_response\">'+bl_params_to_html(params,el_id)+'</div></div> </div>'+e.innerHTML}function bl_msg_ajax_end(data,el_id){var span_error,div,span=document.getElementById('bl_c_'+el_id);span.innerHTML='<span id=\"bl_c_c_'+el_id+'\">'+data.status+' '+data.statusText+'</span> '+time(data.time)+'s';span_error=document.getElementById('bl_c_c_'+el_id);if (data.status==='500'||data.status==='403'||data.status==='404'||data.status==='301'){span_error.addClass('bl_highlight_error')}if (data.params!==null){document.getElementById('bl_p_'+el_id).innerHTML=bl_params_to_html(data.params)}div=document.getElementById('bl_d_'+el_id);div.innerHTML='<pre>'+htmlentities(data.response)+'</pre>'}function bl_set_ajax_view(el_id,type){var params=document.getElementById('bl_p_'+el_id),response=document.getElementById('bl_d_'+el_id);if (type==='params'){params.style.display='block';response.style.display='none'} else{params.style.display='none';response.style.display='block'}}function bl_ajax_response(el_id){var e=document.getElementById('bl_ajax_resume_'+el_id);if (e.style.display==='block'){e.style.display='none'} else{e.style.display='block'}}var random,el_id,s_ajaxListener={};s_ajaxListener.tempOpen=XMLHttpRequest.prototype.open;s_ajaxListener.tempSend=XMLHttpRequest.prototype.send;s_ajaxListener.callback=function(){};(function(){function fReadyStateChange(oRequest){if (cXMLHttpRequest.onreadystatechange){cXMLHttpRequest.onreadystatechange.apply(oRequest)}oRequest.dispatchEvent({'type':\"readystatechange\",'bubbles':false,'cancelable':false,'timeStamp':new Date()+0})}function fGetDocument(oRequest){var oDocument=oRequest.responseXML,sResponse=oRequest.responseText,bIE;if (bIE&&sResponse&&oDocument&&!oDocument.documentElement&&oRequest.getResponseHeader(\"Content-Type\").match(/[^\/]+\/[^\+]+\+xml/)){oDocument=new window.ActiveXObject(\"Microsoft.XMLDOM\");oDocument.async=false;oDocument.validateOnParse=false;oDocument.loadXML(sResponse)}if (oDocument){if ((bIE&&oDocument.parseError!==0)||!oDocument.documentElement||(oDocument.documentElement&&oDocument.documentElement.tagName===\"parsererror\")){return null}}return oDocument}function fSynchronizeValues(oRequest){try{oRequest.responseText=oRequest._object.responseText}catch(e){}try{oRequest.responseXML=fGetDocument(oRequest._object)}catch(e){}try{oRequest.status=oRequest._object.status}catch(e){}try{oRequest.statusText=oRequest._object.statusText}catch(e){}}function fCleanTransport(oRequest){oRequest._object.onreadystatechange=new window.Function()}var oXMLHttpRequest=window.XMLHttpRequest,bGecko=!!window.controllers,bIE=window.document.all&&!window.opera,bIE7=bIE&&window.navigator.userAgent.match(/MSIE 7.0/);function fXMLHttpRequest(){this._object=oXMLHttpRequest&&!bIE7?new oXMLHttpRequest():new window.ActiveXObject(\"Microsoft.XMLHTTP\");this._listeners=[]}function cXMLHttpRequest(){return new fXMLHttpRequest()}cXMLHttpRequest.prototype=fXMLHttpRequest.prototype;if (bGecko&&oXMLHttpRequest.wrapped){cXMLHttpRequest.wrapped=oXMLHttpRequest.wrapped}cXMLHttpRequest.UNSENT=0;cXMLHttpRequest.OPENED=1;cXMLHttpRequest.HEADERS_RECEIVED=2;cXMLHttpRequest.LOADING=3;cXMLHttpRequest.DONE=4;cXMLHttpRequest.prototype.readyState=cXMLHttpRequest.UNSENT;cXMLHttpRequest.prototype.responseText='';cXMLHttpRequest.prototype.responseXML=null;cXMLHttpRequest.prototype.status=0;cXMLHttpRequest.prototype.statusText='';cXMLHttpRequest.prototype.priority=\"NORMAL\";cXMLHttpRequest.prototype.onreadystatechange=null;cXMLHttpRequest.onreadystatechange=null;cXMLHttpRequest.onopen=null;cXMLHttpRequest.onsend=null;cXMLHttpRequest.onabort=null;cXMLHttpRequest.prototype.open=function(sMethod,sUrl,bAsync,sUser,sPassword){var d1=new Date(),el_id=randomString(12),data={},bl_url_ex,oRequest,fOnUnload,nState,el_count,el_count_now,el_count_sum;el_count=document.getElementById('bl_num_request');el_count_now=parseInt(el_count.innerHTML,10);if (el_count_now===0){document.getElementById('bl_debug_ajax_box').innerHTML=''}el_count_sum=el_count_now+1;el_count.innerHTML=el_count_sum;data.url=sUrl;data.method=sMethod;data.async=bAsync;data.params='';bl_url_ex=sUrl.split(\"?\");if (bl_url_ex[1]!=='undefined'){data.params=bl_url_ex[1]}bl_msg_ajax(data,el_id);delete this._headers;if (arguments.length<3){bAsync=true}this._async=bAsync;oRequest=this;nState=this.readyState;if (bIE&&bAsync){fOnUnload=function(){if (nState!==cXMLHttpRequest.DONE){fCleanTransport(oRequest);oRequest.abort()}};window.attachEvent(\"onunload\",fOnUnload)}if (cXMLHttpRequest.onopen){cXMLHttpRequest.onopen.apply(this,arguments)}if (arguments.length>4){this._object.open(sMethod,sUrl,bAsync,sUser,sPassword)} elseif (arguments.length>3){this._object.open(sMethod,sUrl,bAsync,sUser)} else{this._object.open(sMethod,sUrl,bAsync)}this.readyState=cXMLHttpRequest.OPENED;fReadyStateChange(this);this._object.onreadystatechange=function(dd){var d2=new Date(),d3=d2-d1,params='',data={};if (oRequest._data!=='undefined'){params=oRequest._data}if (this.readyState===4){data.time=d3;data.response=this.response;data.status=this.status;data.statusText=this.statusText;data.params=params;bl_msg_ajax_end(data,el_id)}if (bGecko&&!bAsync){return}oRequest.readyState=oRequest._object.readyState;fSynchronizeValues(oRequest);if (oRequest._aborted){oRequest.readyState=cXMLHttpRequest.UNSENT;return}if (oRequest.readyState===cXMLHttpRequest.DONE){delete oRequest._data;if (bIE&&bAsync){window.detachEvent(\"onunload\",fOnUnload)}}if (nState!==oRequest.readyState){fReadyStateChange(oRequest)}nState=oRequest.readyState}};function fXMLHttpRequest_send(oRequest){oRequest._object.send(oRequest._data);if (bGecko&&!oRequest._async){oRequest.readyState=cXMLHttpRequest.OPENED;fSynchronizeValues(oRequest);while(oRequest.readyState<cXMLHttpRequest.DONE){oRequest.readyState++;fReadyStateChange(oRequest);if (oRequest._aborted){return}}}}cXMLHttpRequest.prototype.send=function(vData){if (cXMLHttpRequest.onsend){cXMLHttpRequest.onsend.apply(this,arguments)}if (!arguments.length){vData=null}if (vData&&vData.nodeType){vData=window.XMLSerializer?new window.XMLSerializer().serializeToString(vData):vData.xml;if (!oRequest._headers[\"Content-Type\"]){oRequest._object.setRequestHeader(\"Content-Type\",\"application/xml\")}}this._data=vData;fXMLHttpRequest_send(this)};cXMLHttpRequest.prototype.abort=function(){if (cXMLHttpRequest.onabort){cXMLHttpRequest.onabort.apply(this,arguments)}if (this.readyState>cXMLHttpRequest.UNSENT){this._aborted=true}this._object.abort();fCleanTransport(this);this.readyState=cXMLHttpRequest.UNSENT;delete this._data};cXMLHttpRequest.prototype.getAllResponseHeaders=function(){return this._object.getAllResponseHeaders()};cXMLHttpRequest.prototype.getResponseHeader=function(sName){return this._object.getResponseHeader(sName)};cXMLHttpRequest.prototype.setRequestHeader=function(sName,sValue){if (!this._headers){this._headers={}}this._headers[sName]=sValue;return this._object.setRequestHeader(sName,sValue)};cXMLHttpRequest.prototype.dispatchEvent=function(oEvent){var nIndex=0,oListener,oEventPseudo={'type':oEvent.type,'target':this,'currentTarget':this,'eventPhase':2,'bubbles':oEvent.bubbles,'cancelable':oEvent.cancelable,'timeStamp':oEvent.timeStamp,'stopPropagation':function(){},'preventDefault':function(){},'initEvent':function(){}};if (oEventPseudo.type===\"readystatechange\"&&this.onreadystatechange){(this.onreadystatechange.handleEvent||this.onreadystatechange).apply(this,[oEventPseudo])}for (oListener;oListener=this._listeners[nIndex];nIndex++){if (oListener[0]===oEventPseudo.type&&!oListener[2]){(oListener[1].handleEvent||oListener[1]).apply(this,[oEventPseudo])}}};cXMLHttpRequest.prototype.toString=function(){return'['+\"object\"+' '+\"XMLHttpRequest\"+']'};cXMLHttpRequest.toString=function(){return'['+\"XMLHttpRequest\"+']'};window.XMLHttpRequest=cXMLHttpRequest})();
+          function bl_params_to_html(params,id){if(params){var param,i,p,ps;ps=params.split('&');param='<table>';for(i in ps){p=ps[i].split('=');param=param+'<tr><td><strong>'+p[0]+'</strong></td><td>'+p[1]+'</td>'}param=param+'</table>';return param}}function bl_msg_ajax(data,el_id){var params=data.params,e=document.getElementById('bl_debug_ajax_box');e.innerHTML='<div id=\"bl_'+el_id+'\" class=\"bl_ajax_msg\"><div class=\"bl_ajax_header\"><strong>'+data.method+'</strong> <a href=\"javascript:bl_ajax_response(\''+el_id+'\');\">'+data.url+'</a> <span id=\"bl_c_'+el_id+'\" class=\"\">[loading...]</span></div> <div class=\"bl_ajax_request\" id=\"bl_ajax_resume_'+el_id+'\" style=\"display:none;\"><ul class=\"bl_ajax_menu\"><li><a href=\"javascript:bl_set_ajax_view(\''+el_id+'\',\'params\');\">Params</a></li><li> <a href=\"javascript:bl_set_ajax_view(\''+el_id+'\',\'response\');\" class=\"bl_active\">Response</a></li></ul><div id=\"bl_d_'+el_id+'\" class=\"bl_ajax_response\">  </div><div id=\"bl_p_'+el_id+'\" style=\"display:none;\" class=\"bl_ajax_response\">'+bl_params_to_html(params,el_id)+'</div></div> </div>'+e.innerHTML}function bl_msg_ajax_end(data,el_id){var span_error,div,span=document.getElementById('bl_c_'+el_id);span.innerHTML='<span id=\"bl_c_c_'+el_id+'\">'+data.status+' '+data.statusText+'</span> '+time(data.time)+'s';span_error=document.getElementById('bl_c_c_'+el_id);if(data.status==='500'||data.status==='403'||data.status==='404'||data.status==='301'){span_error.addClass('bl_highlight_error')}if(data.params!==null){document.getElementById('bl_p_'+el_id).innerHTML=bl_params_to_html(data.params)}div=document.getElementById('bl_d_'+el_id);div.innerHTML='<pre>'+htmlentities(data.response)+'</pre>'}function bl_set_ajax_view(el_id,type){var params=document.getElementById('bl_p_'+el_id),response=document.getElementById('bl_d_'+el_id);if(type==='params'){params.style.display='block';response.style.display='none'}else{params.style.display='none';response.style.display='block'}}function bl_ajax_response(el_id){var e=document.getElementById('bl_ajax_resume_'+el_id);if(e.style.display==='block'){e.style.display='none'}else{e.style.display='block'}}var random,el_id,s_ajaxListener={};s_ajaxListener.tempOpen=XMLHttpRequest.prototype.open;s_ajaxListener.tempSend=XMLHttpRequest.prototype.send;s_ajaxListener.callback=function(){};(function(){function fReadyStateChange(oRequest){if(cXMLHttpRequest.onreadystatechange){cXMLHttpRequest.onreadystatechange.apply(oRequest)}oRequest.dispatchEvent({'type':\"readystatechange\",'bubbles':false,'cancelable':false,'timeStamp':new Date()+0})}function fGetDocument(oRequest){var oDocument=oRequest.responseXML,sResponse=oRequest.responseText,bIE;if(bIE&&sResponse&&oDocument&&!oDocument.documentElement&&oRequest.getResponseHeader(\"Content-Type\").match(/[^\/]+\/[^\+]+\+xml/)){oDocument=new window.ActiveXObject(\"Microsoft.XMLDOM\");oDocument.async=false;oDocument.validateOnParse=false;oDocument.loadXML(sResponse)}if(oDocument){if((bIE&&oDocument.parseError!==0)||!oDocument.documentElement||(oDocument.documentElement&&oDocument.documentElement.tagName===\"parsererror\")){return null}}return oDocument}function fSynchronizeValues(oRequest){try{oRequest.responseText=oRequest._object.responseText}catch(e){}try{oRequest.responseXML=fGetDocument(oRequest._object)}catch(e){}try{oRequest.status=oRequest._object.status}catch(e){}try{oRequest.statusText=oRequest._object.statusText}catch(e){}}function fCleanTransport(oRequest){oRequest._object.onreadystatechange=new window.Function()}var oXMLHttpRequest=window.XMLHttpRequest,bGecko=!!window.controllers,bIE=window.document.all&&!window.opera,bIE7=bIE&&window.navigator.userAgent.match(/MSIE 7.0/);function fXMLHttpRequest(){this._object=oXMLHttpRequest&&!bIE7?new oXMLHttpRequest():new window.ActiveXObject(\"Microsoft.XMLHTTP\");this._listeners=[]}function cXMLHttpRequest(){return new fXMLHttpRequest()}cXMLHttpRequest.prototype=fXMLHttpRequest.prototype;if(bGecko&&oXMLHttpRequest.wrapped){cXMLHttpRequest.wrapped=oXMLHttpRequest.wrapped}cXMLHttpRequest.UNSENT=0;cXMLHttpRequest.OPENED=1;cXMLHttpRequest.HEADERS_RECEIVED=2;cXMLHttpRequest.LOADING=3;cXMLHttpRequest.DONE=4;cXMLHttpRequest.prototype.readyState=cXMLHttpRequest.UNSENT;cXMLHttpRequest.prototype.responseText='';cXMLHttpRequest.prototype.responseXML=null;cXMLHttpRequest.prototype.status=0;cXMLHttpRequest.prototype.statusText='';cXMLHttpRequest.prototype.priority=\"NORMAL\";cXMLHttpRequest.prototype.onreadystatechange=null;cXMLHttpRequest.onreadystatechange=null;cXMLHttpRequest.onopen=null;cXMLHttpRequest.onsend=null;cXMLHttpRequest.onabort=null;cXMLHttpRequest.prototype.open=function(sMethod,sUrl,bAsync,sUser,sPassword){var d1=new Date(),el_id=randomString(12),data={},bl_url_ex,oRequest,fOnUnload,nState,el_count,el_count_now,el_count_sum;el_count=document.getElementById('bl_num_request');el_count_now=parseInt(el_count.innerHTML,10);if(el_count_now===0){document.getElementById('bl_debug_ajax_box').innerHTML=''}el_count_sum=el_count_now+1;el_count.innerHTML=el_count_sum;data.url=sUrl;data.method=sMethod;data.async=bAsync;data.params='';bl_url_ex=sUrl.split(\"?\");if(bl_url_ex[1]!=='undefined'){data.params=bl_url_ex[1]}bl_msg_ajax(data,el_id);delete this._headers;if(arguments.length<3){bAsync=true}this._async=bAsync;oRequest=this;nState=this.readyState;if(bIE&&bAsync){fOnUnload=function(){if(nState!==cXMLHttpRequest.DONE){fCleanTransport(oRequest);oRequest.abort()}};window.attachEvent(\"onunload\",fOnUnload)}if(cXMLHttpRequest.onopen){cXMLHttpRequest.onopen.apply(this,arguments)}if(arguments.length>4){this._object.open(sMethod,sUrl,bAsync,sUser,sPassword)}else if(arguments.length>3){this._object.open(sMethod,sUrl,bAsync,sUser)}else{this._object.open(sMethod,sUrl,bAsync)}this.readyState=cXMLHttpRequest.OPENED;fReadyStateChange(this);this._object.onreadystatechange=function(dd){var d2=new Date(),d3=d2-d1,params='',data={};if(oRequest._data!=='undefined'){params=oRequest._data}if(this.readyState===4){data.time=d3;data.response=this.response;data.status=this.status;data.statusText=this.statusText;data.params=params;bl_msg_ajax_end(data,el_id)}if(bGecko&&!bAsync){return}oRequest.readyState=oRequest._object.readyState;fSynchronizeValues(oRequest);if(oRequest._aborted){oRequest.readyState=cXMLHttpRequest.UNSENT;return}if(oRequest.readyState===cXMLHttpRequest.DONE){delete oRequest._data;if(bIE&&bAsync){window.detachEvent(\"onunload\",fOnUnload)}}if(nState!==oRequest.readyState){fReadyStateChange(oRequest)}nState=oRequest.readyState}};function fXMLHttpRequest_send(oRequest){oRequest._object.send(oRequest._data);if(bGecko&&!oRequest._async){oRequest.readyState=cXMLHttpRequest.OPENED;fSynchronizeValues(oRequest);while(oRequest.readyState<cXMLHttpRequest.DONE){oRequest.readyState++;fReadyStateChange(oRequest);if(oRequest._aborted){return}}}}cXMLHttpRequest.prototype.send=function(vData){if(cXMLHttpRequest.onsend){cXMLHttpRequest.onsend.apply(this,arguments)}if(!arguments.length){vData=null}if(vData&&vData.nodeType){vData=window.XMLSerializer?new window.XMLSerializer().serializeToString(vData):vData.xml;if(!oRequest._headers[\"Content-Type\"]){oRequest._object.setRequestHeader(\"Content-Type\",\"application/xml\")}}this._data=vData;fXMLHttpRequest_send(this)};cXMLHttpRequest.prototype.abort=function(){if(cXMLHttpRequest.onabort){cXMLHttpRequest.onabort.apply(this,arguments)}if(this.readyState>cXMLHttpRequest.UNSENT){this._aborted=true}this._object.abort();fCleanTransport(this);this.readyState=cXMLHttpRequest.UNSENT;delete this._data};cXMLHttpRequest.prototype.getAllResponseHeaders=function(){return this._object.getAllResponseHeaders()};cXMLHttpRequest.prototype.getResponseHeader=function(sName){return this._object.getResponseHeader(sName)};cXMLHttpRequest.prototype.setRequestHeader=function(sName,sValue){if(!this._headers){this._headers={}}this._headers[sName]=sValue;return this._object.setRequestHeader(sName,sValue)};cXMLHttpRequest.prototype.dispatchEvent=function(oEvent){var nIndex=0,oListener,oEventPseudo={'type':oEvent.type,'target':this,'currentTarget':this,'eventPhase':2,'bubbles':oEvent.bubbles,'cancelable':oEvent.cancelable,'timeStamp':oEvent.timeStamp,'stopPropagation':function(){},'preventDefault':function(){},'initEvent':function(){}};if(oEventPseudo.type===\"readystatechange\"&&this.onreadystatechange){(this.onreadystatechange.handleEvent||this.onreadystatechange).apply(this,[oEventPseudo])}for(oListener;oListener=this._listeners[nIndex];nIndex++){if(oListener[0]===oEventPseudo.type&&!oListener[2]){(oListener[1].handleEvent||oListener[1]).apply(this,[oEventPseudo])}}};cXMLHttpRequest.prototype.toString=function(){return'['+\"object\"+' '+\"XMLHttpRequest\"+']'};cXMLHttpRequest.toString=function(){return'['+\"XMLHttpRequest\"+']'};window.XMLHttpRequest=cXMLHttpRequest})();
         </script>";
     }
 
@@ -2382,7 +2371,7 @@ function bl_get_url()
     $script = $_SERVER['SCRIPT_NAME'];
     $params = $_SERVER['QUERY_STRING'];
 
-    $currentUrl = $protocol . '://' . $host . $script . '?' . $params;
+    $currentUrl = $protocol.'://'.$host.$script.'?'.$params;
 
     return $currentUrl;
 }
@@ -2409,8 +2398,8 @@ function bl_check_load_time($load_time)
         if ($load_time > _bl_max_load_time) {
             $data = array();
             $data['Time Max'] = strip_tags(bl_format_time(_bl_max_load_time));
-            $data['Time Load'] = '<span style="color:#f00;">' . strip_tags(bl_format_time
-                ($load_time)) . '</span>';
+            $data['Time Load'] = '<span style="color:#f00;">'.strip_tags(bl_format_time
+                ($load_time)).'</span>';
             $data['Exceded'] = strip_tags(bl_format_time($load_time - _bl_max_load_time));
             $data['Url'] = bl_get_url();
 
@@ -2438,7 +2427,7 @@ function bl_check_total_memory($total_memory)
 
             $data = array();
             $data['Memory Max'] = strip_tags(bl_convert(_bl_max_total_memory));
-            $data['Memory Used'] = '<span style="color:#f00;">' . strip_tags(bl_convert($total_memory)) .
+            $data['Memory Used'] = '<span style="color:#f00;">'.strip_tags(bl_convert($total_memory)) .
                 '</span>';
             $data['Exceded'] = strip_tags(bl_convert($exceded));
             $data['Url'] = bl_get_url();
@@ -2464,7 +2453,7 @@ function bl_check_querys($bl_msg_sql)
         foreach ($bl_msg_sql as $v) {
             if (!empty($v['error'])) {
                 $v['time'] = bl_format_time($v['time']);
-                $v['error'] = '<span style="color:#f00;">' . $v['error'] . '</span>';
+                $v['error'] = '<span style="color:#f00;">'.$v['error'].'</span>';
                 $msg = '<h3>SQL Crash</h3> <p>Ther\'re a problem with this query:</p>';
                 $title = 'SQL Fail';
 
@@ -2475,7 +2464,7 @@ function bl_check_querys($bl_msg_sql)
             if (_bl_max_sql_time > 0) {
                 if ($v['time'] > _bl_max_sql_time) {
 
-                    $v['time'] = '<span style="color:#f00;">' . bl_format_time($v['time']) .
+                    $v['time'] = '<span style="color:#f00;">'.bl_format_time($v['time']) .
                         '</span>';
                     $v['Max Time'] = _bl_max_sql_time;
                     $msg = '<h3>A SQL Query has exceded the max time for querys </h3>';
@@ -2529,8 +2518,8 @@ function bl_get_bookmarklets($type) {
         $result = '<h3>CSS Bookmarklets</h3><ul>';
         foreach (_bl::$bookmarklets['css'] as $bookmark) {
             $quote = (isset($bookmark['quote'])) ? $bookmark['quote'] : '"';
-            $result .= '<li><a href=' . $quote . $bookmark['url'] . $quote .
-                ' class="bl_bookmark">' . $bookmark['title'] . '</a></li>';
+            $result .= '<li><a href='.$quote.$bookmark['url'].$quote .
+                ' class="bl_bookmark">'.$bookmark['title'].'</a></li>';
         }
         $result .= '</ul>';
 
@@ -2538,8 +2527,8 @@ function bl_get_bookmarklets($type) {
         $result = '<h3>JS Bookmarklets</h3><ul>';
         foreach (_bl::$bookmarklets['js'] as $bookmark) {
             $quote = (isset($bookmark['quote'])) ? $bookmark['quote'] : '"';
-            $result .= '<li><a href=' . $quote . $bookmark['url'] . $quote .
-                ' class="bl_bookmark">' . $bookmark['title'] . '</a></li>';
+            $result .= '<li><a href='.$quote.$bookmark['url'].$quote .
+                ' class="bl_bookmark">'.$bookmark['title'].'</a></li>';
         }
         $result .= '</ul>';
 
@@ -2548,8 +2537,8 @@ function bl_get_bookmarklets($type) {
         $result = '<h3>Other Bookmarklets</h3><ul>';
         foreach (_bl::$bookmarklets['other'] as $bookmark) {
             $quote = (isset($bookmark['quote'])) ? $bookmark['quote'] : '"';
-            $result .= '<li><a href=' . $quote . $bookmark['url'] . $quote .
-                ' class="bl_bookmark">' . $bookmark['title'] . '</a></li>';
+            $result .= '<li><a href='.$quote.$bookmark['url'].$quote .
+                ' class="bl_bookmark">'.$bookmark['title'].'</a></li>';
         }
         $result .= '</ul>';
     }
@@ -2675,8 +2664,8 @@ function bl_get_trace()
             $vars = bl_get_vars(
                 $trace['vars'], '
                 _USER',
-                'trace_' . $trace_id . '_',
-                bl_link_file($trace['debug'][0]['file'], $trace['debug'][0]['line']) . ' '.$trace['debug'][0]['line']
+                'trace_'.$trace_id.'_',
+                bl_link_file($trace['debug'][0]['file'], $trace['debug'][0]['line']).' '.$trace['debug'][0]['line']
             );
 
             $trace_name = '';
@@ -2738,12 +2727,17 @@ function bl_tick()
             if (!isset($buffer[$watch])) {
                 $defined[$watch] = true;
                 $buffer[$watch] = $w;
-                _bl::$watches[$watch][] = array($w, $debug[0]['file'], $debug[0]['line']);
+                if ($w != 'undefined') {
+                    _bl::$watches[$watch][] = array($w, $debug[0]['file'], $debug[0]['line']);
+                }
             } else {
                 // check if the var has a different value at this tick
                 if ($buffer[$watch] != $w) {
                     // check the var not is undefined
-                    if ($defined[$watch] == true and $w != 'undefined') {
+                    $pathinfo = pathinfo($debug[0]['file']);
+                    if ($defined[$watch] == true and $w != 'undefined'
+                        and $pathinfo['basename'] != _bl_filename
+                    ) {
                         _bl::$watches[$watch][] = array($w, $debug[0]['file'], $debug[0]['line']);
                     }
                 }
@@ -2781,7 +2775,6 @@ function bl_get_watches()
         foreach (_bl::$watches as $watch_key => $watch) {
 
             ++$watch_id;
-
             $watch_details = '';
             foreach ($watch as $detail) {
                 if (is_array($detail)) {
@@ -2789,8 +2782,7 @@ function bl_get_watches()
                     $watch_details .= '
                         <tr>
                             <td>'.bl_get_vars($d, '_USER', 'watch').'</td>
-                            <td>'.bl_link_file($detail[1], $detail[2]).'</td>
-                            <td>'.$detail[2].'</td>
+                            <td>'.bl_link_file($detail[1], $detail[2]).':'.$detail[2].'</td>
                         </tr>';
                 }
             }
@@ -2806,9 +2798,8 @@ function bl_get_watches()
                     <table>
                         <thead>
                             <tr>
-                                <th>value</th>
-                                <th>in file</th>
-                                <th>at line</th>
+                                <th class="bl_watch_value">value</th>
+                                <th class="bl_watch_file">file</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2864,13 +2855,13 @@ function bl_get_profile()
 
             if (count($msg['arguments'])) {
                 $arguments = '
-                    <a href="javascript:void(0);" onclick="view_array(\'div_' . $array_name .
-                        '_' . $count . '\')" id="a_' . $array_name . '_' . $count .
+                    <a href="javascript:void(0);" onclick="view_array(\'div_'.$array_name .
+                        '_'.$count.'\')" id="a_'.$array_name.'_'.$count .
                         '" style="color:#008000">Array(...</a>
-                    <div style="display:none;" id="div_' . $array_name . '_' . $count . '">
+                    <div style="display:none;" id="div_'.$array_name.'_'.$count.'">
                         <p class="bl_close_array"><a href="javascript:void(0);" onclick="view_array(\'div_' .
-                        $array_name . '_' . $count . '\')">Close</a></p>
-                        <pre>' . bl_high_array($msg['arguments']) . '</pre>
+                        $array_name.'_'.$count.'\')">Close</a></p>
+                        <pre>'.bl_high_array($msg['arguments']).'</pre>
                     </div>';
                 $count++;
             }
@@ -3126,6 +3117,16 @@ function bl_debug($active = false, $return = false)
 
     ///////////////////////
     // security
+    // check secret key
+    if (_bl_delete_vars == true and _bl_secret_key == '_pbl_') {
+        echo '<strong>ERROR FROM PHP BUG LOST:</strong> Sorry for this error!
+            but you need to change your secret key
+            otherwise it is not secret! Open you PHP Bug Lost file,
+            search for _bl_secret_key constant and change with any word, number or
+            alphanumeric string.';
+        exit();
+    }
+
     if ($active == false) {
         return '';
     }
@@ -3141,12 +3142,12 @@ function bl_debug($active = false, $return = false)
     bl_create_bookmarklets();
 
     /* get vars */
-    $post = bl_get_vars($_POST, '_POST');
-    $get = bl_get_vars($_GET, '_GET');
-    $server = bl_get_vars($_SERVER, '_SERVER');
-    $files = bl_get_vars($_FILES, '_FILES');
-    $cookie = bl_get_vars($_COOKIE, '_COOKIE');
-    $user = '';
+    $post     = bl_get_vars($_POST, '_POST');
+    $get      = bl_get_vars($_GET, '_GET');
+    $server   = bl_get_vars($_SERVER, '_SERVER');
+    $files    = bl_get_vars($_FILES, '_FILES');
+    $cookie   = bl_get_vars($_COOKIE, '_COOKIE');
+    $user     = '';
     $specials = bl_get_vars(_bl::$vars, '_SPECIAL');
     if (isset($_SESSION)) {
         $session = bl_get_vars($_SESSION, '_SESSION');
@@ -3202,24 +3203,24 @@ function bl_debug($active = false, $return = false)
     $memory_usage = '
     <div id="bl_included">
         <h3>PHP Included Files</h3>
-        ' . bl_included_files() . '
+        '.bl_included_files().'
     </div>';
     $memory_usage .= '
     <div class="bl_box">
         <h3>Max File Size</h3>
-        <span class="bl_memory_usage"><strong>' . str_ireplace(_bl_root, '', _bl::$max_file_size['file']) .
-        ' : ' . strip_tags(bl_convert(_bl::$max_file_size['size'])) .
+        <span class="bl_memory_usage"><strong>'.str_ireplace(_bl_root, '', _bl::$max_file_size['file']) .
+        ' : '.strip_tags(bl_convert(_bl::$max_file_size['size'])) .
         '</strong></span>
     </div>
     <div class="bl_box">
         <h3>Max Var Size</h3>
-        <span class="bl_memory_usage"><strong>$' . _bl::$max_var_size['var'] . ' : ' .
-        strip_tags(bl_convert(_bl::$max_var_size['size'])) . '</strong></span>
+        <span class="bl_memory_usage"><strong>$'._bl::$max_var_size['var'].' : ' .
+        strip_tags(bl_convert(_bl::$max_var_size['size'])).'</strong></span>
     </div>
     <div class="bl_box">
         <h3>PHP Memory</h3>
-        <span class="bl_memory_total">Available: ' . ini_get('memory_limit') . '</span>
-        <span class="bl_memory_usage">Using: <strong>' . $memory_num .
+        <span class="bl_memory_total">Available: '.ini_get('memory_limit').'</span>
+        <span class="bl_memory_usage">Using: <strong>'.$memory_num .
         '</strong></span>
     </div>';
 
@@ -3237,7 +3238,7 @@ function bl_debug($active = false, $return = false)
 
     $extensions = '';
     foreach (get_loaded_extensions() as $i => $ext) {
-        $extensions .= $ext . ' => ' . phpversion($ext) . '<br/>';
+        $extensions .= $ext.' => '.phpversion($ext).'<br/>';
     }
     if (empty($extensions)) {
         $extensions .= '<div class="bl_nothing"><p>There aren\'t extensions</p></div>';
@@ -3247,10 +3248,10 @@ function bl_debug($active = false, $return = false)
     $result = '
     <div id="bl_debug_wrap">
         <div id="bl_debug" class="bl_border_top bl_half bl_resize">
-            <div id="bl_debug_content" class="bl_' . _bl::$panel_state . '_panel">
+            <div id="bl_debug_content" class="bl_'._bl::$panel_state.'_panel">
                 <span id="bl_loading"><img src="'.bl_loading_image().'" alt="Loading" /> loading...</span>
                 <div id="bl_debug_panels">
-                    <div id="bl_debug_msg" class="bl_debug_panel ' . _bl::$panel_active['msg'] . '">
+                    <div id="bl_debug_msg" class="bl_debug_panel '._bl::$panel_active['msg'].'">
 
                         <div id="bl_debug_msg_menu" class="bl_menu_vertical">
                             <ul>
@@ -3263,31 +3264,31 @@ function bl_debug($active = false, $return = false)
                         </div>
 
                         <div class="in20 bl_panel_info">
-                            ' . $message_list . '
+                            '.$message_list.'
                         </div>
                     </div>
 
-                    <div id="bl_debug_sql" class="bl_debug_panel ' . _bl::$panel_active['sql'] . '">
+                    <div id="bl_debug_sql" class="bl_debug_panel '._bl::$panel_active['sql'].'">
                         <div class="in20 bl_panel_info">
-                            ' . $querys . '
+                            '.$querys.'
                         </div>
                     </div>
 
-                    <div id="bl_debug_time" class="bl_debug_panel ' . _bl::$panel_active['time'] . '">
+                    <div id="bl_debug_time" class="bl_debug_panel '._bl::$panel_active['time'].'">
                         <div class="in20 bl_panel_info">
-                            ' . bl_get_times(_bl::$msgs_time) . '
+                            '.bl_get_times(_bl::$msgs_time).'
                         </div>
                     </div>
 
-                    <div id="bl_debug_memory" class="bl_debug_panel ' . _bl::$panel_active['memory'] . '">
+                    <div id="bl_debug_memory" class="bl_debug_panel '._bl::$panel_active['memory'].'">
                         <div class="in20 bl_panel_info">
                             <div id="bl_debug_memory_box">
-                                ' . $memory_usage . '
+                                '.$memory_usage.'
                             </div>
                         </div>
                     </div>
 
-                    <div id="bl_debug_ajax" class="bl_debug_panel ' . _bl::$panel_active['ajax'] . '">
+                    <div id="bl_debug_ajax" class="bl_debug_panel '._bl::$panel_active['ajax'].'">
                         <div class="in20 bl_panel_info">
                             <div id="bl_debug_ajax_box">
                                 <div class="bl_nothing"><p>No Ajax Requests</p></div>
@@ -3295,7 +3296,7 @@ function bl_debug($active = false, $return = false)
                         </div>
                     </div>
 
-                    <div id="bl_debug_php" class="bl_debug_panel ' . _bl::$panel_active['php'] . '">
+                    <div id="bl_debug_php" class="bl_debug_panel '._bl::$panel_active['php'].'">
 
                         <div id="bl_debug_php_box">
                             <div id="bl_debug_php_menu" class="bl_menu_vertical">
@@ -3310,11 +3311,11 @@ function bl_debug($active = false, $return = false)
                             <div id="bl_debug_php_panels">
                                 <div class="in10 bl_debug_php_panel  bl_debug_php_panel_activo"  id="bl_debug_php_ext">
                                     <div class="bl_box">
-                                        <p>' . $extensions . '</p>
+                                        <p>'.$extensions.'</p>
                                     </div>
                                 </div>
                                 <div class="in10 bl_debug_php_panel"  id="bl_debug_php_cpu">
-                                    ' . bl_get_usage() . '
+                                    '.bl_get_usage().'
                                 </div>
                                 <div class="in10 bl_debug_php_panel"  id="bl_debug_php_phpinfo">
                                     '.bl_phpinfo().'
@@ -3324,7 +3325,7 @@ function bl_debug($active = false, $return = false)
                     </div>
 
 
-                    <div id="bl_debug_eval" class="bl_debug_panel ' . _bl::$panel_active['eval'] . '">
+                    <div id="bl_debug_eval" class="bl_debug_panel '._bl::$panel_active['eval'].'">
                         <div id="bl_debug_eval_box">
                             <div id="bl_debug_eval_menu" class="bl_menu_vertical">
                                 <ul>
@@ -3340,7 +3341,7 @@ function bl_debug($active = false, $return = false)
                         </div>
                     </div>
 
-                    <div id="bl_debug_profile" class="bl_debug_panel ' . _bl::$panel_active['profile'] . '">
+                    <div id="bl_debug_profile" class="bl_debug_panel '._bl::$panel_active['profile'].'">
                         <div id="bl_debug_profile_box">
                             <div id="bl_debug_profile_menu" class="bl_menu_vertical">
                                 <ul>
@@ -3366,10 +3367,10 @@ function bl_debug($active = false, $return = false)
                     </div>
 
 
-                    <div id="bl_debug_info" class="bl_debug_panel ' . _bl::$panel_active['info'] . '">
+                    <div id="bl_debug_info" class="bl_debug_panel '._bl::$panel_active['info'].'">
                         <div class="in20 bl_panel_info">
                             <h3>About...</h3>
-                            <p>Version 0.5</p>
+                            <p>v@0.5a Standard</p>
                             <p><strong>PHP Bug Lost</strong> is Open Source. Original idea from
                                 <a href="http://particletree.com/features/php-quick-profiler/">Php Quick Profiler</a>.</p>
                             <h3>Thanks To:</h3>
@@ -3402,7 +3403,7 @@ function bl_debug($active = false, $return = false)
                         </div>
                     </div>
 
-                    <div id="bl_debug_vars" class="bl_debug_panel ' . _bl::$panel_active['vars'] . '">
+                    <div id="bl_debug_vars" class="bl_debug_panel '._bl::$panel_active['vars'].'">
 
                         <div id="bl_debug_var_content">
                             <div id="bl_debug_var_menu" class="bl_menu_vertical">
@@ -3428,83 +3429,83 @@ function bl_debug($active = false, $return = false)
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_user" name="filter" type="text" />
                                         </div>
-                                        ' . $user . '
+                                        '.$user.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_special">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_special" name="filter" type="text" />
                                         </div>
-                                        ' . $specials . '
+                                        '.$specials.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_functions">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_functions" name="filter" type="text" />
                                         </div>
-                                        ' . $functions . '
+                                        '.$functions.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_uclasses">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_uclasses" name="filter" type="text" />
                                         </div>
-                                        ' . $uclasses . '
+                                        '.$uclasses.'
                                     </div>
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_iclasses">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_iclasses" name="filter" type="text" />
                                         </div>
-                                        ' . $iclasses . '
+                                        '.$iclasses.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_constants">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_constants" name="filter" type="text" />
                                         </div>
-                                        ' . $constants . '
+                                        '.$constants.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_get">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_get" name="filter" type="text" />
                                         </div>
-                                        ' . $get . '
+                                        '.$get.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_post">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_post" name="filter" type="text" />
                                         </div>
-                                        ' . $post . '
+                                        '.$post.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_session">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_session" name="filter" type="text" />
                                         </div>
-                                        ' . $session . '
+                                        '.$session.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_cookie">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_cookie" name="filter" type="text" />
                                         </div>
-                                        ' . $cookie . '
+                                        '.$cookie.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_files">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_files" name="filter" type="text" />
                                         </div>
-                                        ' . $files . '
+                                        '.$files.'
                                     </div>
 
                                     <div class="in10 bl_debug_var_panel" id="bl_debug_var_server">
                                         <div class="bl_filter_box">
                                             Filter <input id="bl_filter_server" name="filter" type="text" />
                                         </div>
-                                        ' . $server . '
+                                        '.$server.'
                                     </div>
 
                                 </div>
@@ -3517,23 +3518,23 @@ function bl_debug($active = false, $return = false)
                 <div id="bl_debug_menu">
                     <ul>
                         <li><a href="javascript:bl_debug_set_panel(\'msg\');" id="bl_debug_btn_msg" class="bl_debug_btn">
-                            <span>' . _bl::$count_msg . ' logs ' . _bl_key_logs . '</span></a></li>
+                            <span>'._bl::$count_msg.' logs '._bl_key_logs.'</span></a></li>
                         <li><a href="javascript:bl_debug_set_panel(\'sql\');" id="bl_debug_btn_sql" class="bl_debug_btn">
-                            <span>' . _bl::$count_querys . ' Sql</span> ' . _bl_key_sql . '</a></li>
+                            <span>'._bl::$count_querys.' Sql</span> '._bl_key_sql.'</a></li>
                         <li><a href="javascript:bl_debug_set_panel(\'vars\');" id="bl_debug_btn_vars" class="bl_debug_btn">
-                            <span>Vars</span> ' . _bl_key_vars . '</a></li>
+                            <span>Vars</span> '._bl_key_vars.'</a></li>
                         <li><a href="javascript:bl_debug_set_panel(\'profile\');" id="bl_debug_btn_profile" class="bl_debug_btn">
-                            <span>Profile</span> ' . _bl_key_profile . '</a></li>
+                            <span>Profile</span> '._bl_key_profile.'</a></li>
                         <li><a href="javascript:bl_debug_set_panel(\'time\');" id="bl_debug_btn_time" class="bl_debug_btn">
-                            <span>' . $total_load_time . '</span> ' . _bl_key_time . '</a></li>
+                            <span>'.$total_load_time.'</span> '._bl_key_time.'</a></li>
                         <li><a href="javascript:bl_debug_set_panel(\'memory\');" id="bl_debug_btn_memory" class="bl_debug_btn">
-                            <span>' . $memory_num . '</span> ' . _bl_key_memory . '</a></li>
+                            <span>'.$memory_num.'</span> '._bl_key_memory.'</a></li>
                         <li><a href="javascript:bl_debug_set_panel(\'ajax\');" id="bl_debug_btn_ajax" class="bl_debug_btn">
-                            <span><em id="bl_num_request">0</em> Ajax</span> ' . _bl_key_ajax . '</a></li>
+                            <span><em id="bl_num_request">0</em> Ajax</span> '._bl_key_ajax.'</a></li>
                         <li><a href="javascript:bl_debug_set_panel(\'php\');" id="bl_debug_btn_php" class="bl_debug_btn">
-                            <span>PHP</span> ' . _bl_key_php . '</a></li>
+                            <span>PHP</span> '._bl_key_php.'</a></li>
                         <li><a href="javascript:bl_debug_set_panel(\'eval\');" id="bl_debug_btn_eval" class="bl_debug_btn">
-                            <span>Eval</span> ' . _bl_key_eval . '</a></li>
+                            <span>Eval</span> '._bl_key_eval.'</a></li>
                     </ul>
                 </div>
 
@@ -3541,9 +3542,9 @@ function bl_debug($active = false, $return = false)
                     <div id="bl_debug_toggle_buttons">
                         <a href="javascript:bl_setPanelSize(\'close\')" title="Close console">X</a>
                         <a href="javascript:bl_setPanelSize(\'plus\')" title="Open or maximize console">M</a>
-                        <a href="javascript:bl_debug_set_panel(\'info\');" id="bl_debug_btn_info" title="Info Panel">about' . _bl_key_info . '</a>
-                        <a href="javascript:bl_opacity();" title="Opacity">opacity' . _bl_key_opacity . '</a>
-                        <a href="javascript:bl_toggle(\'bl_tool_box\');" title="JS/CSS files and bookmarklets">js/css' . _bl_key_jscss . '</a>
+                        <a href="javascript:bl_debug_set_panel(\'info\');" id="bl_debug_btn_info" title="Info Panel">about'._bl_key_info.'</a>
+                        <a href="javascript:bl_opacity();" title="Opacity">opacity'._bl_key_opacity.'</a>
+                        <a href="javascript:bl_toggle(\'bl_tool_box\');" title="JS/CSS files and bookmarklets">js/css'._bl_key_jscss.'</a>
                     </div>
                     <div id="bl_tool_box" style="display:none;">
                         <div id="bl_js_css">
@@ -3551,9 +3552,9 @@ function bl_debug($active = false, $return = false)
                             <div id="bl_css"></div>
                         </div>
                         <div id="bl_bookmarks">
-                            ' . bl_get_bookmarklets('js') . '
-                            ' . bl_get_bookmarklets('css') . '
-                            ' . bl_get_bookmarklets('other') . '
+                            '.bl_get_bookmarklets('js').'
+                            '.bl_get_bookmarklets('css').'
+                            '.bl_get_bookmarklets('other').'
                         </div>
                     </div>
                 </div>
@@ -3565,7 +3566,7 @@ function bl_debug($active = false, $return = false)
     </div>'; // the end...
 
     // add js / css
-    $result .= bl_css() . bl_js();
+    $result .= bl_css().bl_js();
 
     // alert for errors
     if (_bl::$errors == true and _bl_alert_errors == true) {
@@ -3692,7 +3693,7 @@ if (_bl_production == false) {
                 <p style="float:right;"><a href="javascript:void(0);" onclick="document.getElementById(\'bl_file_container\').style.display = \'none\'; return false;">[cerrar]</a><p>
             </div>';
 
-            die($header . '<div id="bl_file_explorer" style="overflow:scroll">'.bl_highlight_file($file, $file_line).'</div>');
+            die($header.'<div id="bl_file_explorer" style="overflow:scroll">'.bl_highlight_file($file, $file_line).'</div>');
 
         } else {
             die('error-file');
