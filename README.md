@@ -36,7 +36,7 @@ PHPBugLost is a one-file library without dependencies, works with PHP5 and requi
 
 ## Installation
 
-Basically, include PHP Bug Lost at top of your code and call _bl_debug()_ before </body> tag. See documentation for more examples.
+Basically, include PHP Bug Lost at top of your code and call _bl_debug()_ before ```</body>``` tag. See documentation for more examples.
 
 ```php
 <?php
