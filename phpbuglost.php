@@ -214,13 +214,15 @@ define('_bl_ajax_active', true);
 define('_bl_file_viewer', true);
 
 
+define('_bl_hide_phpinfo', false);
+
 /**
  * Use external css file.
  * Multiple whit coma: estyle1.css, estyle2.css, style3.css...
  * Keep empty for use internal css
  * @type string
  */
-define('_bl_css_file', '/PHP-Bug-Lost/assets/presentation.css');
+define('_bl_css_file', '');
 
 /**
  * Use external js file. Multiple with coma.
@@ -2574,6 +2576,10 @@ function bl_add_bookmark($type, $title, $url, $quote = '"')
  */
 function bl_phpinfo()
 {
+    if (_bl_hide_phpinfo) {
+        return '<div class="bl_nothing"><p>phpingo() is disabled. <br />Enable with _bl_hide_phpinfo constant</p></div>';
+    }
+
     ob_start();
     phpinfo();
     $phpinfo = ob_get_contents();
