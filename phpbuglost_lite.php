@@ -376,7 +376,7 @@ function bl_format_time($time, $dec = 4)
 function bl_msg($msg, $file, $line, $type = 'user')
 {
     // don't fill memory if we don't need it later
-    if (strpos(_BL_MESSAGES_TYPES, $type) == false) {
+    if (strpos(_BL_MESSAGES_TYPES, $type) == false and _BL_MESSAGES_TYPES != 'all') {
         return false;
     }
 
