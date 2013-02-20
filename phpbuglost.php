@@ -620,6 +620,7 @@ function bl_get_msg($type = _bl_messages_types, $styles = false)
     $td_style = '';
     $td_colors = array(
         'error' => '',
+        'strict' => '',
         'warn' => '',
         'info' => '',
         'user' => ''
@@ -862,7 +863,9 @@ function bl_error_handler($errno, $errstr, $errfile, $errline, $errcontext)
         }
     }
 
-    bl_msg($msg, $errfile, $errline, 'error');
+    $type = $errno == E_STRICT ? 'strict' : 'error';
+
+    bl_msg($msg, $errfile, $errline, $type);
 }
 
 /**
