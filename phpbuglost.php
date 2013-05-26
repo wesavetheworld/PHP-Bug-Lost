@@ -620,6 +620,7 @@ function bl_get_msg($type = _bl_messages_types, $styles = false)
     $td_style = '';
     $td_colors = array(
         'error' => '',
+        'strict' => '',
         'warn' => '',
         'info' => '',
         'user' => ''
@@ -862,7 +863,9 @@ function bl_error_handler($errno, $errstr, $errfile, $errline, $errcontext)
         }
     }
 
-    bl_msg($msg, $errfile, $errline, 'error');
+    $type = $errno == E_STRICT ? 'strict' : 'error';
+
+    bl_msg($msg, $errfile, $errline, $type);
 }
 
 /**
@@ -877,6 +880,9 @@ function bl_query($query, $con = null)
     if (_bl_db_driver == 'mysql') {
         return bl_mysql($query, $con, 1);
 
+    } elseif (_bl_db_driver == 'mysqli') {
+        return bl_mysqli($query, $con, 1);
+		
     } elseif (_bl_db_driver == 'sqlite') {
         if ($con != null) {
             return bl_sqlite($query, $con, 1);
@@ -1000,6 +1006,97 @@ function bl_mysql($query, $con = null, $debugnum = 0)
             '<p>New MySQL Error from PHPBugLost</p>',
             'New MySQL Error from PHPBugLost',
             _bl::$msg_sql[$c]
+        );
+    }
+
+    return $sql; // return resource
+}
+
+
+
+/**
+ * bl_mysqli()
+ * Execute a mysqli query and send the data to the log
+ *
+ * @access public
+ *
+ * @param string $query The query to run
+ * @param mysqli $con Required, connection to mysql
+ *
+ * @return mysqli_result MySQL resource
+ */
+function bl_mysqli($query, mysqli $con, $debugnum = 0) {
+    if (_bl_create_times) {
+        bl_time('Start Query ' . substr($query, 0, 30)) . '...';
+    }
+
+    $debug = debug_backtrace();
+
+    $error = '';
+
+    // make query and get time
+    // WTF! DRY!!
+    $t_start = bl_get_time();
+    $sql = $con->query($query);
+    $time = bl_get_time($t_start);
+
+    if ($con->error) {
+        $error = $con->error;
+    }
+
+    // check for errros
+    $insert_id = $results = '0';
+    $explain_info = '';
+    $q = trim(strtolower($query));
+    if (substr($q, 0, 6) == 'insert') { // if is insert get the last id
+        $insert_id = $con->insert_id;
+    } else {
+        if (substr($q, 0, 6) == 'select') { // if is select get num rows
+            // explain query?
+            $explain_info = '';
+            if (_bl_explain_sql and !$error and _bl_production == false) {
+                $sql_explain = $con->query("EXPLAIN " . $query);
+                $explain = $sql_explain->fetch_assoc();
+
+                $explain_info = '
+                <p class="bl_explain">
+                    <strong>EXPLAIN</strong> -&gt;Table: <em>' . $explain['table'] .
+                        '</em> <span class="bl_msg_separator">|</span>
+                    Type: <em>' . $explain['type'] .
+                        '</em> <span class="bl_msg_separator">|</span>
+                    Possible Keys: <em>' . $explain['possible_keys'] .
+                        '</em> <span class="bl_msg_separator">|</span>
+                    Key: <em>' . $explain['key'] .
+                        '</em> <span class="bl_msg_separator">|</span>
+                    Key len: <em>' . $explain['key_len'] .
+                        '</em> <span class="bl_msg_separator">|</span>
+                    Ref: <em>' . $explain['ref'] .
+                        '</em> <span class="bl_msg_separator">|</span>
+                    Extra: <em>' . $explain['Extra'] . '</em>
+                </p>';
+
+                $results = $explain['rows'];
+            } else {
+                $results = $sql->num_rows;
+            }
+        }
+    }
+
+    // add to the querys array
+    _bl::$count_querys++;
+    $c = _bl::$count_querys; // :)
+    _bl::$msg_sql[$c]['query'] = $query;
+    _bl::$msg_sql[$c]['time'] = $time;
+    _bl::$msg_sql[$c]['insert'] = $insert_id;
+    _bl::$msg_sql[$c]['result'] = $results;
+    _bl::$msg_sql[$c]['explain'] = $explain_info;
+    _bl::$msg_sql[$c]['error'] = (!empty($error)) ? '<span class="error">' . $error . '</span>' : '';
+    _bl::$msg_sql[$c]['file'] = $debug[$debugnum]['file'];
+    _bl::$msg_sql[$c]['line'] = $debug[$debugnum]['line'];
+
+    if ($error and _bl_monitor_sql and _bl_monitor_on) {
+        bl_send_mail(
+                '<p>New MySQLi Error from PHPBugLost</p>', 'New MySQLi Error from PHPBugLost', _bl::$msg_sql[$c]
         );
     }
 
