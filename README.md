@@ -1,3 +1,5 @@
+> This project has been discontinued long time ago.
+
 # PHP Bug Lost
 
 PHP Bug Lost is a one-file script for debug and monitoring web sites. It's an inline console running in the browser.
